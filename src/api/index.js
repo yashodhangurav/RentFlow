@@ -2,19 +2,19 @@ const API_BASE_URL = 'http://localhost:5001/api';
 const CLOUDINARY_CLOUD_NAME = 'dysl5mfsh';
 
 export const apiService = {
-  // Direct Cloudinary Upload Helper (returns Cloudinary secure_url)
-  async uploadToCloudinary(fileData, folder = 'tenant_management_system') {
+  // Internal File & Cloudinary Upload Helper (returns file URL)
+  async uploadToCloudinary(fileData, folder = 'tenant_management_system', filename = '') {
     try {
       const res = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file: fileData, folder })
+        body: JSON.stringify({ file: fileData, folder, filename })
       });
       const data = await res.json();
-      if (data.success && (data.secure_url || data.url)) {
-        const cloudUrl = data.secure_url || data.url;
-        console.log('✅ Cloudinary upload successful:', cloudUrl);
-        return cloudUrl;
+      if (data.success && (data.url || data.secure_url)) {
+        const fileUrl = data.url || data.secure_url;
+        console.log('✅ File upload successful:', fileUrl);
+        return fileUrl;
       }
     } catch (err) {
       console.warn('Backend upload route failed, checking fallback...', err);
@@ -24,13 +24,13 @@ export const apiService = {
       const res2 = await fetch(`${API_BASE_URL}/upload/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file: fileData, folder })
+        body: JSON.stringify({ file: fileData, folder, filename })
       });
       const data2 = await res2.json();
-      if (data2.success && (data2.secure_url || data2.url)) {
-        const cloudUrl = data2.secure_url || data2.url;
-        console.log('✅ Cloudinary fallback upload successful:', cloudUrl);
-        return cloudUrl;
+      if (data2.success && (data2.url || data2.secure_url)) {
+        const fileUrl = data2.url || data2.secure_url;
+        console.log('✅ Fallback file upload successful:', fileUrl);
+        return fileUrl;
       }
     } catch (err) {
       console.warn('Fallback upload route failed.', err);

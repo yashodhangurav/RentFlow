@@ -1,4 +1,5 @@
 import React from 'react';
+import { downloadFile } from '../utils/downloadHelper';
 import { 
   ArrowLeft, 
   Phone, 
@@ -39,6 +40,22 @@ export const TenantDetailPage = ({
   const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
   const isExpired = daysUntilExpiry <= 0;
   const isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+
+  const idDocUrl = (tenant.idProofCloudUrl && tenant.idProofCloudUrl.length > 5)
+    ? tenant.idProofCloudUrl
+    : (tenant.idProof && (tenant.idProof.startsWith('http') || tenant.idProof.startsWith('data:') || tenant.idProof.includes('/uploads')))
+      ? tenant.idProof
+      : tenant.idProofDoc || tenant.idProof || `${tenant.name}_Aadhar.pdf`;
+
+  const idDocName = tenant.idProofDocName || tenant.idProofDoc || `${tenant.name}_Aadhar.pdf`;
+
+  const agreementUrl = (tenant.agreementCloudUrl && tenant.agreementCloudUrl.length > 5)
+    ? tenant.agreementCloudUrl
+    : (tenant.agreementFile && (tenant.agreementFile.startsWith('http') || tenant.agreementFile.startsWith('data:') || tenant.agreementFile.includes('/uploads')))
+      ? tenant.agreementFile
+      : tenant.agreementPdf || tenant.agreementFile || `Agreement_${roomName}.pdf`;
+
+  const agreementName = tenant.agreementPdfName || tenant.agreementPdf || `Agreement_${roomName}.pdf`;
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -158,13 +175,23 @@ export const TenantDetailPage = ({
             </div>
           </div>
 
-          <button
-            onClick={() => onOpenDocument(tenant.idProofDoc || tenant.idProof || `${tenant.name}_Aadhar.pdf`, 'Aadhar / Govt ID Proof', tenant.name)}
-            className="btn btn-outline btn-sm"
-            style={{ width: '100%', justifyContent: 'center', marginTop: '1rem', gap: '0.5rem' }}
-          >
-            <ShieldCheck size={15} /> View Uploaded ID Proof Document
-          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '1rem' }}>
+            <button
+              onClick={() => onOpenDocument(idDocName, 'Aadhar / Govt ID Proof', tenant.name, '', null, null, idDocUrl)}
+              className="btn btn-outline btn-sm"
+              style={{ justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <ShieldCheck size={15} /> View ID Proof
+            </button>
+
+            <button
+              onClick={() => downloadFile(idDocUrl, idDocName)}
+              className="btn btn-primary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.4rem', fontWeight: '700' }}
+            >
+              <Download size={15} /> Download ID
+            </button>
+          </div>
         </div>
 
         {/* Box 2: Agreement Management & Expiry Status */}
@@ -182,7 +209,7 @@ export const TenantDetailPage = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Agreement Document</span>
-                <strong>{tenant.agreementPdf || tenant.agreementFile || `Agreement_${roomName}.pdf`}</strong>
+                <strong>{agreementName}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Contract Start Date</span>
@@ -197,13 +224,23 @@ export const TenantDetailPage = ({
             </div>
           </div>
 
-          <button
-            onClick={() => onOpenDocument(tenant.agreementPdf || tenant.agreementFile || `Agreement_${roomName}.pdf`, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate || tenant.leaseEnd)}
-            className="btn btn-secondary btn-sm"
-            style={{ width: '100%', justifyContent: 'center', marginTop: '1rem', gap: '0.5rem' }}
-          >
-            <FileText size={15} color="var(--accent-warning)" /> Open & Preview Agreement PDF
-          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '1rem' }}>
+            <button
+              onClick={() => onOpenDocument(agreementName, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate || tenant.leaseEnd, null, null, agreementUrl)}
+              className="btn btn-secondary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.4rem' }}
+            >
+              <FileText size={15} color="var(--accent-warning)" /> Preview PDF
+            </button>
+
+            <button
+              onClick={() => downloadFile(agreementUrl, agreementName)}
+              className="btn btn-primary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.4rem', fontWeight: '700' }}
+            >
+              <Download size={15} /> Download Agreement
+            </button>
+          </div>
         </div>
       </div>
 

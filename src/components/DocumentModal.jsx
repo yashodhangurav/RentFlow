@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatINR } from '../utils/formatters';
+import { downloadFile } from '../utils/downloadHelper';
 import { X, FileText, Download, Printer, ShieldCheck, CheckCircle2, Calendar, Image as ImageIcon, Zap, DollarSign, Check } from 'lucide-react';
 
 export const DocumentModal = ({ 
@@ -10,12 +11,15 @@ export const DocumentModal = ({
   tenantName, 
   expiryDate,
   paymentData,
-  onApprovePayment
+  onApprovePayment,
+  fileUrl
 }) => {
   if (!isOpen) return null;
 
   const isPaymentProof = documentType?.toLowerCase().includes('proof') || documentType?.toLowerCase().includes('screenshot') || documentType?.toLowerCase().includes('receipt');
   const isElectricity = documentType?.toLowerCase().includes('electricity') || documentType?.toLowerCase().includes('current bill');
+
+  const actualFileUrl = fileUrl || paymentData?.proofFile || paymentData?.electricityProofFile;
 
   return (
     <div className="modal-overlay">
@@ -115,13 +119,13 @@ export const DocumentModal = ({
 
             <div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Uploaded File Record
+                Internal Document Record
               </div>
               <h4 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)', marginTop: '2px' }}>
                 {documentTitle || 'Tenant_Payment_Proof.png'}
               </h4>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                Stored in Encrypted Cloud Storage • Timestamp: {new Date().toLocaleDateString()}
+                Stored Internally on Server Disk • Verified Record
               </div>
             </div>
 
@@ -148,19 +152,18 @@ export const DocumentModal = ({
           </div>
         </div>
 
-        {/* Modal Footer with Direct Owner Approval Action */}
+        {/* Modal Footer with Direct Owner Approval & Download Action */}
         <div className="modal-footer" style={{ borderTop: '1px solid var(--border-color)' }}>
           <button onClick={() => window.print()} className="btn btn-secondary btn-sm">
             <Printer size={15} /> Print Record
           </button>
           
           <button 
-            onClick={() => {
-              alert(`Downloading authentic uploaded proof file: ${documentTitle}`);
-            }} 
-            className="btn btn-outline btn-sm"
+            onClick={() => downloadFile(actualFileUrl || documentTitle, documentTitle)} 
+            className="btn btn-primary btn-sm"
+            style={{ gap: '6px', fontWeight: '800' }}
           >
-            <Download size={15} /> Download Proof File
+            <Download size={15} /> Download Document
           </button>
 
           {paymentData && paymentData.status === 'verification_pending' && onApprovePayment && (

@@ -157,9 +157,16 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
       setUploadingCloud(true);
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const cloudUrl = await apiService.uploadToCloudinary(reader.result, 'tenant_id_proofs');
-        setFormData(prev => ({ ...prev, idProofDocName: file.name, idProofCloudUrl: cloudUrl || file.name }));
-        setIdFilePreview(cloudUrl || file.name);
+        const fileUrl = await apiService.uploadToCloudinary(reader.result, 'tenant_id_proofs', file.name);
+        const resolvedUrl = (fileUrl && (fileUrl.startsWith('http') || fileUrl.startsWith('data:'))) ? fileUrl : reader.result;
+        setFormData(prev => ({ 
+          ...prev, 
+          idProofDocName: file.name, 
+          idProofCloudUrl: resolvedUrl,
+          idProof: resolvedUrl,
+          idProofDoc: file.name
+        }));
+        setIdFilePreview(file.name);
         setUploadingCloud(false);
       };
       reader.readAsDataURL(file);
@@ -172,9 +179,16 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
       setUploadingCloud(true);
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const cloudUrl = await apiService.uploadToCloudinary(reader.result, 'tenant_agreements');
-        setFormData(prev => ({ ...prev, agreementPdfName: file.name, agreementCloudUrl: cloudUrl || file.name }));
-        setAgreementFilePreview(cloudUrl || file.name);
+        const fileUrl = await apiService.uploadToCloudinary(reader.result, 'tenant_agreements', file.name);
+        const resolvedUrl = (fileUrl && (fileUrl.startsWith('http') || fileUrl.startsWith('data:'))) ? fileUrl : reader.result;
+        setFormData(prev => ({ 
+          ...prev, 
+          agreementPdfName: file.name, 
+          agreementCloudUrl: resolvedUrl,
+          agreementFile: resolvedUrl,
+          agreementPdf: file.name
+        }));
+        setAgreementFilePreview(file.name);
         setUploadingCloud(false);
       };
       reader.readAsDataURL(file);
@@ -186,6 +200,9 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
     const propObj = properties.find(p => p.id === formData.propertyId);
     const roomFormatted = formData.roomNo.toLowerCase().includes('room') ? formData.roomNo : `Room ${formData.roomNo}`;
     const finalAvatar = formData.avatarCloudUrl || formData.avatar || avatarPreview || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80`;
+
+    const finalIdProofUrl = formData.idProofCloudUrl || (formData.idProof && (formData.idProof.startsWith('http') || formData.idProof.startsWith('data:')) ? formData.idProof : '');
+    const finalAgreementUrl = formData.agreementCloudUrl || (formData.agreementFile && (formData.agreementFile.startsWith('http') || formData.agreementFile.startsWith('data:')) ? formData.agreementFile : '');
 
     onSave({
       ...formData,
@@ -200,12 +217,14 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
       leaseEnd: formData.agreementExpiryDate,
       rentAmount: Number(formData.rentAmount),
       deposit: Number(formData.deposit),
+      idProofDocName: formData.idProofDocName || `${formData.name.replace(/\s+/g, '_')}_Aadhar.pdf`,
       idProofDoc: formData.idProofDocName || `${formData.name.replace(/\s+/g, '_')}_Aadhar.pdf`,
-      idProof: formData.idProofCloudUrl || formData.idProofDocName || `${formData.name.replace(/\s+/g, '_')}_Aadhar.pdf`,
-      idProofCloudUrl: formData.idProofCloudUrl,
-      agreementPdf: formData.agreementCloudUrl || formData.agreementPdfName || `Agreement_${roomFormatted.replace(/\s+/g, '_')}.pdf`,
-      agreementFile: formData.agreementCloudUrl || formData.agreementPdfName || `Agreement_${roomFormatted.replace(/\s+/g, '_')}.pdf`,
-      agreementCloudUrl: formData.agreementCloudUrl,
+      idProof: finalIdProofUrl || formData.idProofDocName || `${formData.name.replace(/\s+/g, '_')}_Aadhar.pdf`,
+      idProofCloudUrl: finalIdProofUrl,
+      agreementPdfName: formData.agreementPdfName || `Agreement_${roomFormatted.replace(/\s+/g, '_')}.pdf`,
+      agreementPdf: formData.agreementPdfName || `Agreement_${roomFormatted.replace(/\s+/g, '_')}.pdf`,
+      agreementFile: finalAgreementUrl || formData.agreementPdfName || `Agreement_${roomFormatted.replace(/\s+/g, '_')}.pdf`,
+      agreementCloudUrl: finalAgreementUrl,
       avatar: finalAvatar,
       avatarCloudUrl: finalAvatar
     });

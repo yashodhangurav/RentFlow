@@ -293,7 +293,11 @@ export const Tenants = ({
                     </div>
 
                     <button
-                      onClick={() => onOpenDocument(tenant.agreementPdf || tenant.agreementFile || `Agreement_${roomName}.pdf`, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate)}
+                      onClick={() => {
+                        const agreementUrl = tenant.agreementCloudUrl || tenant.agreementPdfName || tenant.agreementFile || tenant.agreementPdf;
+                        const agreementName = tenant.agreementPdfName || tenant.agreementPdf || `Agreement_${roomName}.pdf`;
+                        onOpenDocument(agreementName, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate, null, null, agreementUrl);
+                      }}
                       className="btn btn-outline btn-sm"
                       style={{ padding: '0.25rem 0.5rem', fontSize: '0.725rem', gap: '4px' }}
                     >

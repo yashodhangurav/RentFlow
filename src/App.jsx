@@ -112,6 +112,7 @@ const MainAppContent = () => {
   const [docExpiryDate, setDocExpiryDate] = useState('');
   const [docPaymentData, setDocPaymentData] = useState(null);
   const [docApproveCallback, setDocApproveCallback] = useState(null);
+  const [docFileUrl, setDocFileUrl] = useState('');
 
   // Sync theme
   useEffect(() => {
@@ -140,13 +141,14 @@ const MainAppContent = () => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const handleOpenDocument = (title, type, tenantName, expiry = '', paymentData = null, approveCallback = null) => {
+  const handleOpenDocument = (title, type, tenantName, expiry = '', paymentData = null, approveCallback = null, fileUrl = '') => {
     setDocTitle(title);
     setDocType(type);
     setDocTenantName(tenantName);
     setDocExpiryDate(expiry);
     setDocPaymentData(paymentData);
     setDocApproveCallback(() => approveCallback);
+    setDocFileUrl(fileUrl || paymentData?.proofFile || paymentData?.electricityProofFile || '');
     setIsDocModalOpen(true);
   };
 
@@ -656,6 +658,7 @@ const MainAppContent = () => {
         expiryDate={docExpiryDate}
         paymentData={docPaymentData}
         onApprovePayment={docApproveCallback}
+        fileUrl={docFileUrl}
       />
 
       {/* Toast Feedback Bar */}

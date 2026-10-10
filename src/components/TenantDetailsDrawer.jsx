@@ -1,4 +1,5 @@
 import React from 'react';
+import { downloadFile } from '../utils/downloadHelper';
 import { 
   X, 
   Phone, 
@@ -13,7 +14,8 @@ import {
   History, 
   AlertTriangle, 
   CheckCircle2, 
-  Clock 
+  Clock,
+  Download
 } from 'lucide-react';
 
 export const TenantDetailsDrawer = ({ 
@@ -34,6 +36,22 @@ export const TenantDetailsDrawer = ({
   const today = new Date();
   const expiryDate = new Date(tenant.agreementExpiryDate || tenant.leaseEnd);
   const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+
+  const idDocUrl = (tenant.idProofCloudUrl && tenant.idProofCloudUrl.length > 5)
+    ? tenant.idProofCloudUrl
+    : (tenant.idProof && (tenant.idProof.startsWith('http') || tenant.idProof.startsWith('data:') || tenant.idProof.includes('/uploads')))
+      ? tenant.idProof
+      : tenant.idProofDoc || tenant.idProof || `${tenant.name}_Aadhar.pdf`;
+
+  const idDocName = tenant.idProofDocName || tenant.idProofDoc || `${tenant.name}_Aadhar.pdf`;
+
+  const agreementUrl = (tenant.agreementCloudUrl && tenant.agreementCloudUrl.length > 5)
+    ? tenant.agreementCloudUrl
+    : (tenant.agreementFile && (tenant.agreementFile.startsWith('http') || tenant.agreementFile.startsWith('data:') || tenant.agreementFile.includes('/uploads')))
+      ? tenant.agreementFile
+      : tenant.agreementPdf || tenant.agreementFile || `Agreement_${roomName}.pdf`;
+
+  const agreementName = tenant.agreementPdfName || tenant.agreementPdf || `Agreement_${roomName}.pdf`;
 
   return (
     <div style={{
@@ -142,14 +160,22 @@ export const TenantDetailsDrawer = ({
               <strong>{tenant.joiningDate || tenant.leaseStart}</strong>
             </div>
 
-            {/* ID Proof Document View Button */}
-            <div style={{ marginTop: '0.4rem' }}>
+            {/* ID Proof Document View & Download Buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.4rem' }}>
               <button
-                onClick={() => onOpenDocument(tenant.idProofDoc || `${tenant.name}_Aadhar.pdf`, 'Aadhar / Govt ID Proof', tenant.name)}
+                onClick={() => onOpenDocument(idDocName, 'Aadhar / Govt ID Proof', tenant.name, '', null, null, idDocUrl)}
                 className="btn btn-outline btn-sm"
-                style={{ width: '100%', justifyContent: 'center', gap: '0.4rem', fontSize: '0.775rem' }}
+                style={{ justifyContent: 'center', gap: '0.3rem', fontSize: '0.75rem' }}
               >
-                <ShieldCheck size={14} /> View Uploaded ID Proof ({tenant.idProofDoc || 'Aadhar.pdf'})
+                <ShieldCheck size={14} /> View ID Proof
+              </button>
+
+              <button
+                onClick={() => downloadFile(idDocUrl, idDocName)}
+                className="btn btn-primary btn-sm"
+                style={{ justifyContent: 'center', gap: '0.3rem', fontSize: '0.75rem', fontWeight: '700' }}
+              >
+                <Download size={14} /> Download ID
               </button>
             </div>
           </div>
@@ -181,13 +207,23 @@ export const TenantDetailsDrawer = ({
             </div>
           </div>
 
-          <button
-            onClick={() => onOpenDocument(tenant.agreementPdf || `Agreement_${roomName}.pdf`, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate)}
-            className="btn btn-secondary btn-sm"
-            style={{ width: '100%', justifyContent: 'center', gap: '0.4rem', fontSize: '0.775rem' }}
-          >
-            <FileText size={14} color="var(--accent-warning)" /> Open Agreement Document ({tenant.agreementPdf || 'Agreement.pdf'})
-          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <button
+              onClick={() => onOpenDocument(agreementName, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate, null, null, agreementUrl)}
+              className="btn btn-secondary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.3rem', fontSize: '0.75rem' }}
+            >
+              <FileText size={14} color="var(--accent-warning)" /> Open PDF
+            </button>
+
+            <button
+              onClick={() => downloadFile(agreementUrl, agreementName)}
+              className="btn btn-primary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.3rem', fontSize: '0.75rem', fontWeight: '700' }}
+            >
+              <Download size={14} /> Download Agreement
+            </button>
+          </div>
         </div>
 
         {/* History System Section */}
