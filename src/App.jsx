@@ -250,21 +250,33 @@ const MainAppContent = () => {
   // Handlers for Tenant CRUD (connected to MongoDB Atlas)
   const handleSaveTenant = async (tenantData) => {
     const exists = tenants.find(t => t.id === tenantData.id || t._id === tenantData.id);
-    
+    const payload = {
+      name: tenantData.name,
+      phone: tenantData.phone,
+      email: tenantData.email,
+      password: tenantData.password,
+      roomNumber: tenantData.roomNo || tenantData.unit || tenantData.roomNumber,
+      rentAmount: tenantData.rentAmount,
+      deposit: tenantData.deposit,
+      joiningDate: tenantData.joiningDate,
+      idProof: tenantData.idProofDoc || tenantData.idProof || 'Aadhar_Proof.pdf',
+      agreementFile: tenantData.agreementPdf || tenantData.agreementFile || 'Agreement_Doc.pdf',
+      agreementExpiryDate: tenantData.agreementExpiryDate,
+      status: tenantData.status || 'Active',
+      propertyId: tenantData.propertyId,
+      propertyName: tenantData.propertyName,
+      aadharId: tenantData.aadharId,
+      emergencyContact: tenantData.emergencyContact,
+      occupation: tenantData.occupation,
+      idProofCloudUrl: tenantData.idProofCloudUrl,
+      agreementCloudUrl: tenantData.agreementCloudUrl,
+      avatar: tenantData.avatar,
+      avatarCloudUrl: tenantData.avatarCloudUrl
+    };
+
     if (exists) {
       const mongoId = exists._id || exists.id;
-      const updatedMongo = await apiService.updateTenant(mongoId, {
-        name: tenantData.name,
-        phone: tenantData.phone,
-        roomNumber: tenantData.roomNo || tenantData.unit,
-        rentAmount: tenantData.rentAmount,
-        deposit: tenantData.deposit,
-        joiningDate: tenantData.joiningDate,
-        idProof: tenantData.idProofDoc || tenantData.idProof || 'Aadhar_Proof.pdf',
-        agreementFile: tenantData.agreementPdf || tenantData.agreementFile || 'Agreement_Doc.pdf',
-        agreementExpiryDate: tenantData.agreementExpiryDate,
-        status: tenantData.status
-      });
+      const updatedMongo = await apiService.updateTenant(mongoId, payload);
 
       setTenants(prev => prev.map(t => (t.id === tenantData.id || t._id === tenantData.id) ? { ...tenantData, ...(updatedMongo || {}) } : t));
       addToast(`Updated ${tenantData.name} in MongoDB Atlas`, 'success');
@@ -275,22 +287,13 @@ const MainAppContent = () => {
         setDetailPageTenant(tenantData);
       }
     } else {
-      const createdMongo = await apiService.createTenant({
-        name: tenantData.name,
-        phone: tenantData.phone,
-        roomNumber: tenantData.roomNo || tenantData.unit,
-        rentAmount: tenantData.rentAmount,
-        deposit: tenantData.deposit,
-        joiningDate: tenantData.joiningDate,
-        idProof: tenantData.idProofDoc || tenantData.idProof || 'Aadhar_Proof.pdf',
-        agreementFile: tenantData.agreementPdf || tenantData.agreementFile || 'Agreement_Doc.pdf',
-        agreementExpiryDate: tenantData.agreementExpiryDate,
-        status: tenantData.status
-      });
+      const createdMongo = await apiService.createTenant(payload);
 
-      const newRecord = createdMongo ? { ...tenantData, id: createdMongo._id, _id: createdMongo._id } : tenantData;
+      const newRecord = createdMongo 
+        ? { ...tenantData, ...createdMongo, id: createdMongo._id, _id: createdMongo._id, roomNo: createdMongo.roomNumber || tenantData.roomNo } 
+        : tenantData;
       setTenants(prev => [newRecord, ...prev]);
-      addToast(`Registered tenant ${tenantData.name} in ${tenantData.propertyName}!`, 'success');
+      addToast(`Registered tenant ${tenantData.name} in ${tenantData.propertyName || 'Property'}!`, 'success');
     }
   };
 

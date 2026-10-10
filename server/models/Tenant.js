@@ -60,6 +60,38 @@ const tenantSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
+  },
+  propertyId: {
+    type: String,
+    default: ''
+  },
+  propertyName: {
+    type: String,
+    default: ''
+  },
+  aadharId: {
+    type: String,
+    default: ''
+  },
+  emergencyContact: {
+    type: String,
+    default: ''
+  },
+  occupation: {
+    type: String,
+    default: ''
+  },
+  idProofCloudUrl: {
+    type: String,
+    default: ''
+  },
+  agreementCloudUrl: {
+    type: String,
+    default: ''
+  },
+  avatarCloudUrl: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

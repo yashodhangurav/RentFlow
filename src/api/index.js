@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5001/api';
 const CLOUDINARY_CLOUD_NAME = 'dysl5mfsh';
 
 export const apiService = {
