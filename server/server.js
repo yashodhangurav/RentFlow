@@ -9,6 +9,7 @@ import { seedDatabase } from './seed.js';
 import tenantRoutes from './routes/tenantRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import propertyRoutes from './routes/propertyRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,6 +60,7 @@ app.post('/api/seed', async (req, res) => {
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/properties', propertyRoutes);
 
 // Direct File Download Route
 app.get('/api/download', (req, res) => {

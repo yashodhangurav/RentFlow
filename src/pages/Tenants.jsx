@@ -7,16 +7,11 @@ import {
   Filter, 
   Grid, 
   List, 
-  Phone, 
-  Mail, 
   DollarSign, 
   Edit, 
   Trash2, 
   Eye, 
-  ShieldAlert, 
   FileText, 
-  ShieldCheck, 
-  Calendar,
   Home
 } from 'lucide-react';
 
@@ -83,44 +78,55 @@ export const Tenants = ({
   }, [tenants, searchTerm, nameSearch, roomFilter, statusFilter]);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Search & Filter Control Bar */}
-      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Filter size={18} color="var(--accent-primary)" /> Search & Filter Tenants
-          </h3>
+      <div className="fintech-card" style={{ padding: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: '600', margin: 0, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <Filter size={16} color="var(--accent-primary)" /> Tenants Directory
+            </h3>
+            <p style={{ fontSize: '0.725rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+              Search across active tenants, units, phone numbers, and lease status
+            </p>
+          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* Grid/Table Switcher */}
-            <div style={{ display: 'flex', background: 'var(--bg-input)', borderRadius: '8px', padding: '2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            {/* View Mode Segmented Switcher */}
+            <div style={{ display: 'flex', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '2px' }}>
               <button
                 onClick={() => setViewMode('grid')}
-                title="Grid View"
+                title="Card View"
                 style={{
-                  background: viewMode === 'grid' ? 'var(--accent-primary)' : 'transparent',
+                  background: viewMode === 'grid' ? 'var(--bg-surface)' : 'transparent',
                   border: 'none',
-                  color: '#ffffff',
-                  padding: '0.35rem 0.6rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
+                  color: viewMode === 'grid' ? 'var(--text-primary)' : 'var(--text-muted)',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: 'var(--radius-xs)',
+                  cursor: 'pointer',
+                  boxShadow: viewMode === 'grid' ? 'var(--shadow-xs)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                <Grid size={16} />
+                <Grid size={14} />
               </button>
               <button
                 onClick={() => setViewMode('table')}
                 title="Table View"
                 style={{
-                  background: viewMode === 'table' ? 'var(--accent-primary)' : 'transparent',
+                  background: viewMode === 'table' ? 'var(--bg-surface)' : 'transparent',
                   border: 'none',
-                  color: '#ffffff',
-                  padding: '0.35rem 0.6rem',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
+                  color: viewMode === 'table' ? 'var(--text-primary)' : 'var(--text-muted)',
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: 'var(--radius-xs)',
+                  cursor: 'pointer',
+                  boxShadow: viewMode === 'table' ? 'var(--shadow-xs)' : 'none',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                <List size={16} />
+                <List size={14} />
               </button>
             </div>
 
@@ -128,40 +134,41 @@ export const Tenants = ({
               onClick={onOpenAddTenant}
               className="btn btn-primary btn-sm"
               id="tenants-add-tenant-btn"
+              style={{ height: '32px' }}
             >
-              <Plus size={16} /> Add New Tenant
+              <Plus size={14} /> Add Tenant
             </button>
           </div>
         </div>
 
-        {/* Dynamic Search Controls Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+        {/* Search Controls Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
           {/* Search by Tenant Name */}
-          <div style={{ position: 'relative' }}>
-            <label className="form-label" style={{ fontSize: '0.75rem' }}>Search by Tenant Name</label>
+          <div>
+            <label className="form-label" style={{ fontSize: '0.725rem' }}>Search by Name</label>
             <div style={{ position: 'relative' }}>
-              <Search size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 className="form-input"
-                placeholder="e.g. Rahul, Priya, Amit..."
+                placeholder="Search tenant name..."
                 value={nameSearch}
                 onChange={(e) => setNameSearch(e.target.value)}
-                style={{ paddingLeft: '34px', fontSize: '0.825rem' }}
+                style={{ paddingLeft: '32px', height: '36px', fontSize: '0.8125rem' }}
               />
             </div>
           </div>
 
           {/* Filter by Room Number */}
           <div>
-            <label className="form-label" style={{ fontSize: '0.75rem' }}>Filter by Room Number</label>
+            <label className="form-label" style={{ fontSize: '0.725rem' }}>Unit / Room Number</label>
             <select
               className="form-select"
               value={roomFilter}
               onChange={(e) => setRoomFilter(e.target.value)}
-              style={{ fontSize: '0.825rem', fontWeight: '600' }}
+              style={{ height: '36px', fontSize: '0.8125rem' }}
             >
-              <option value="ALL">All Rooms ({tenants.length})</option>
+              <option value="ALL">All Units ({tenants.length})</option>
               {availableRooms.map(rm => (
                 <option key={rm} value={rm}>{rm}</option>
               ))}
@@ -170,26 +177,26 @@ export const Tenants = ({
 
           {/* Filter by Rent Payment Status */}
           <div>
-            <label className="form-label" style={{ fontSize: '0.75rem' }}>Rent Payment Status</label>
+            <label className="form-label" style={{ fontSize: '0.725rem' }}>Settlement Status</label>
             <select
               className="form-select"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              style={{ fontSize: '0.825rem', fontWeight: '600' }}
+              style={{ height: '36px', fontSize: '0.8125rem' }}
             >
-              <option value="ALL">All Rent Statuses</option>
-              <option value="PAID">Rent Paid</option>
-              <option value="PENDING">🚨 Rent Pending (Red Warning)</option>
-              <option value="EXPIRING">⚠️ Agreement Expiring (&lt; 7 Days)</option>
+              <option value="ALL">All Settlement Statuses</option>
+              <option value="PAID">Rent Paid (Settled)</option>
+              <option value="PENDING">Rent Pending (Arrears)</option>
+              <option value="EXPIRING">Agreement Expiring (&lt; 7 Days)</option>
             </select>
           </div>
         </div>
       </div>
 
       {/* Filtered Count Banner */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
         <div>
-          Showing <strong>{filteredTenants.length}</strong> of <strong>{tenants.length}</strong> total tenants
+          Showing <strong className="tabular-nums" style={{ color: 'var(--text-primary)' }}>{filteredTenants.length}</strong> of <strong className="tabular-nums" style={{ color: 'var(--text-primary)' }}>{tenants.length}</strong> records
         </div>
         {(nameSearch || roomFilter !== 'ALL' || statusFilter !== 'ALL') && (
           <button
@@ -198,7 +205,7 @@ export const Tenants = ({
               setRoomFilter('ALL');
               setStatusFilter('ALL');
             }}
-            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: '700', textDecoration: 'underline' }}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: '500', fontSize: '0.75rem' }}
           >
             Clear Filters
           </button>
@@ -207,16 +214,16 @@ export const Tenants = ({
 
       {/* Tenants Display (Grid or Table) */}
       {filteredTenants.length === 0 ? (
-        <div className="glass-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-          <Users size={40} color="var(--accent-primary)" style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-          <h3>No Tenants Found Matching Filter</h3>
-          <p style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
-            Try clearing or changing your search criteria.
+        <div className="fintech-card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <Users size={36} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem', opacity: 0.5 }} />
+          <h3 style={{ fontSize: '0.95rem', fontWeight: '600' }}>No Matching Tenants</h3>
+          <p style={{ fontSize: '0.775rem', marginTop: '2px' }}>
+            Try adjusting your search criteria or clearing active filters.
           </p>
         </div>
       ) : viewMode === 'grid' ? (
         /* GRID VIEW */
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: '1rem' }}>
           {filteredTenants.map((tenant) => {
             const isPending = tenant.paymentStatus !== 'Paid';
             const roomName = tenant.roomNo || tenant.roomNumber || tenant.unit;
@@ -224,70 +231,76 @@ export const Tenants = ({
             return (
               <div 
                 key={tenant.id || tenant._id}
-                className="glass-card"
+                className="fintech-card hover-lift"
                 style={{
-                  padding: '1.25rem',
+                  padding: '1.15rem',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  border: isPending ? '2px solid rgba(244, 63, 94, 0.6)' : '1px solid var(--border-color)',
-                  boxShadow: isPending ? '0 4px 20px rgba(244, 63, 94, 0.15)' : undefined
+                  gap: '0.85rem'
                 }}
               >
                 <div>
                   {/* Card Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                       <img
                         src={tenant.avatar}
                         alt={tenant.name}
-                        style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent-primary)' }}
+                        style={{ 
+                          width: '38px', 
+                          height: '38px', 
+                          borderRadius: 'var(--radius-sm)', 
+                          objectFit: 'cover', 
+                          border: '1px solid var(--border-color)' 
+                        }}
                       />
                       <div>
                         <h4 
                           onClick={() => onViewTenant(tenant)}
-                          style={{ fontSize: '1.05rem', fontWeight: '800', cursor: 'pointer', color: 'var(--text-primary)' }}
+                          style={{ fontSize: '0.925rem', fontWeight: '600', cursor: 'pointer', color: 'var(--text-primary)', margin: 0 }}
                         >
                           {tenant.name}
                         </h4>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Home size={14} /> {roomName}
+                        <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px', lineHeight: '1.4' }}>
+                          <Home size={13} color="var(--accent-primary)" />
+                          <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{roomName}</span>
                         </div>
                       </div>
                     </div>
 
-                    <span className={`badge ${isPending ? 'badge-danger' : 'badge-success'}`} style={{ fontWeight: '800' }}>
-                      {isPending ? '🚨 Rent Pending' : 'Paid'}
+                    <span className={`badge ${isPending ? 'badge-warning' : 'badge-success'}`}>
+                      {isPending ? 'Pending' : 'Settled'}
                     </span>
                   </div>
 
                   {/* Contact & ID Row */}
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>Phone: <strong>{tenant.phone}</strong></span>
-                      <code style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '1px 6px', borderRadius: '4px', fontSize: '0.725rem', color: 'var(--text-muted)' }}>
-                        Aadhar: {tenant.aadharId || tenant.idProof || 'N/A'}
+                      <span>Phone: <strong className="tabular-nums" style={{ color: 'var(--text-primary)' }}>{tenant.phone}</strong></span>
+                      <code style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '1px 5px', borderRadius: 'var(--radius-xs)', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                        {tenant.aadharId || 'ID Verified'}
                       </code>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      <span>Joined: {new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</span>
-                      <span>Expiry: {new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      <span>Lease: <span className="tabular-nums">{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</span></span>
+                      <span>Expiry: <span className="tabular-nums">{new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}</span></span>
                     </div>
                   </div>
 
                   {/* Rent Box in INR */}
                   <div style={{
-                    background: isPending ? 'var(--accent-danger-bg)' : 'rgba(255, 255, 255, 0.03)',
-                    padding: '0.65rem 0.85rem',
+                    background: 'var(--bg-subtle)',
+                    border: '1px solid var(--border-color)',
+                    padding: '0.6rem 0.75rem',
                     borderRadius: 'var(--radius-sm)',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                    fontSize: '0.825rem'
+                    alignItems: 'center'
                   }}>
                     <div>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.725rem' }}>Monthly Rent:</span>
-                      <div style={{ fontWeight: '800', color: isPending ? 'var(--accent-danger)' : 'var(--accent-success)', fontSize: '1.05rem' }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Monthly Rate</span>
+                      <div className="tabular-nums" style={{ fontWeight: '600', color: isPending ? 'var(--status-warning)' : 'var(--status-success)', fontSize: '0.95rem' }}>
                         {formatINR(tenant.rentAmount)}
                       </div>
                     </div>
@@ -298,57 +311,56 @@ export const Tenants = ({
                         const agreementName = tenant.agreementPdfName || tenant.agreementPdf || `Agreement_${roomName}.pdf`;
                         onOpenDocument(agreementName, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate, null, null, agreementUrl);
                       }}
-                      className="btn btn-outline btn-sm"
-                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.725rem', gap: '4px' }}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem', gap: '3px' }}
                     >
-                      <FileText size={13} /> Agreement PDF
+                      <FileText size={12} /> Agreement
                     </button>
                   </div>
                 </div>
 
-                {/* Card Actions */}
+                {/* Card Actions Footer */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginTop: '1rem',
                   borderTop: '1px solid var(--border-color)',
-                  paddingTop: '0.75rem'
+                  paddingTop: '0.65rem'
                 }}>
                   <button
                     onClick={() => onViewTenant(tenant)}
-                    className="btn btn-outline btn-sm"
-                    style={{ gap: '0.35rem', fontSize: '0.775rem' }}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontSize: '0.725rem', padding: '0.25rem 0.55rem', gap: '4px' }}
                   >
-                    <Eye size={14} /> Full History
+                    <Eye size={12} /> Details
                   </button>
 
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <div style={{ display: 'flex', gap: '0.35rem' }}>
                     {isPending && (
                       <button
                         onClick={() => onRecordPayment(tenant)}
                         className="btn btn-primary btn-sm"
                         title="Record Rent Payment"
-                        style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                        style={{ padding: '0.25rem 0.55rem', fontSize: '0.725rem' }}
                       >
-                        <DollarSign size={14} /> Collect Rent
+                        <DollarSign size={12} /> Collect
                       </button>
                     )}
                     <button
                       onClick={() => onEditTenant(tenant)}
                       className="btn btn-secondary btn-sm"
                       title="Edit Tenant"
-                      style={{ padding: '0.35rem 0.5rem' }}
+                      style={{ padding: '0.25rem 0.45rem' }}
                     >
-                      <Edit size={14} />
+                      <Edit size={12} />
                     </button>
                     <button
                       onClick={() => onDeleteTenant(tenant.id || tenant._id)}
                       className="btn btn-danger btn-sm"
                       title="Delete Tenant"
-                      style={{ padding: '0.35rem 0.5rem' }}
+                      style={{ padding: '0.25rem 0.45rem' }}
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={12} />
                     </button>
                   </div>
                 </div>
@@ -358,102 +370,121 @@ export const Tenants = ({
         </div>
       ) : (
         /* TABLE VIEW */
-        <div className="glass-card" style={{ padding: '1rem' }}>
-          <div className="table-responsive">
-            <table className="custom-table">
-              <thead>
-                <tr>
-                  <th>Tenant Profile</th>
-                  <th>Room No</th>
-                  <th>Phone Number</th>
-                  <th>Aadhar ID / Proof</th>
-                  <th>Monthly Rent</th>
-                  <th>Rent Status</th>
-                  <th>Agreement Expiry</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTenants.map((tenant) => {
-                  const isPending = tenant.paymentStatus !== 'Paid';
-                  const room = tenant.roomNo || tenant.roomNumber || tenant.unit;
-                  return (
-                    <tr key={tenant.id || tenant._id} style={{ background: isPending ? 'rgba(244, 63, 94, 0.05)' : 'transparent' }}>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                          <img src={tenant.avatar} alt={tenant.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                          <div>
-                            <strong 
-                              onClick={() => onViewTenant(tenant)}
-                              style={{ cursor: 'pointer', color: 'var(--text-primary)' }}
-                            >
-                              {tenant.name}
-                            </strong>
-                            <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Joined: {new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <strong style={{ color: 'var(--accent-primary)', fontSize: '0.95rem' }}>{room}</strong>
-                      </td>
-                      <td>
-                        <span style={{ fontSize: '0.8rem' }}>{tenant.phone}</span>
-                      </td>
-                      <td>
-                        <code style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tenant.aadharId || tenant.idProof || 'N/A'}</code>
-                      </td>
-                      <td>
-                        <strong style={{ color: 'var(--accent-success)' }}>{formatINR(tenant.rentAmount)}</strong>
-                      </td>
-                      <td>
-                        <span className={`badge ${isPending ? 'badge-danger' : 'badge-success'}`} style={{ fontWeight: '800' }}>
-                          {isPending ? '🚨 Pending' : 'Paid'}
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{ fontSize: '0.8rem' }}>{new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}</span>
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.35rem' }}>
-                          <button
+        <div className="table-responsive">
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>Tenant Profile</th>
+                <th>Unit</th>
+                <th>Phone Number</th>
+                <th>Aadhar / ID</th>
+                <th style={{ textAlign: 'right' }}>Monthly Rent</th>
+                <th>Status</th>
+                <th>Expiry</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTenants.map((tenant) => {
+                const isPending = tenant.paymentStatus !== 'Paid';
+                const room = tenant.roomNo || tenant.roomNumber || tenant.unit;
+                return (
+                  <tr key={tenant.id || tenant._id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        <img 
+                          src={tenant.avatar} 
+                          alt={tenant.name} 
+                          style={{ 
+                            width: '28px', 
+                            height: '28px', 
+                            borderRadius: 'var(--radius-sm)', 
+                            objectFit: 'cover',
+                            border: '1px solid var(--border-color)'
+                          }} 
+                        />
+                        <div>
+                          <span 
                             onClick={() => onViewTenant(tenant)}
-                            className="btn btn-secondary btn-sm"
-                            style={{ padding: '0.25rem 0.5rem' }}
-                            title="View Full History"
+                            style={{ cursor: 'pointer', color: 'var(--text-primary)', fontWeight: '500' }}
                           >
-                            <Eye size={14} />
-                          </button>
-                          {isPending && (
-                            <button
-                              onClick={() => onRecordPayment(tenant)}
-                              className="btn btn-primary btn-sm"
-                              style={{ padding: '0.25rem 0.5rem', fontSize: '0.725rem' }}
-                            >
-                              Settle
-                            </button>
-                          )}
-                          <button
-                            onClick={() => onEditTenant(tenant)}
-                            className="btn btn-secondary btn-sm"
-                            style={{ padding: '0.25rem 0.5rem' }}
-                          >
-                            <Edit size={14} />
-                          </button>
-                          <button
-                            onClick={() => onDeleteTenant(tenant.id || tenant._id)}
-                            className="btn btn-danger btn-sm"
-                            style={{ padding: '0.25rem 0.5rem' }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                            {tenant.name}
+                          </span>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.825rem', whiteSpace: 'nowrap' }}>
+                        {room}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="tabular-nums" style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
+                        {tenant.phone}
+                      </span>
+                    </td>
+                    <td>
+                      <code style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
+                        {tenant.aadharId || 'N/A'}
+                      </code>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                        {formatINR(tenant.rentAmount)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${isPending ? 'badge-warning' : 'badge-success'}`}>
+                        {isPending ? 'Pending' : 'Paid'}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="tabular-nums" style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
+                        {new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                        <button
+                          onClick={() => onViewTenant(tenant)}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.3rem 0.55rem', fontSize: '0.75rem', lineHeight: '1.25' }}
+                          title="View Full History"
+                        >
+                          <Eye size={12} />
+                        </button>
+                        {isPending && (
+                          <button
+                            onClick={() => onRecordPayment(tenant)}
+                            className="btn btn-primary btn-sm"
+                            style={{ padding: '0.3rem 0.55rem', fontSize: '0.75rem', lineHeight: '1.25' }}
+                          >
+                            Collect
+                          </button>
+                        )}
+                        <button
+                          onClick={() => onEditTenant(tenant)}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.3rem 0.55rem', fontSize: '0.75rem', lineHeight: '1.25' }}
+                          title="Edit Tenant"
+                        >
+                          <Edit size={12} />
+                        </button>
+                        <button
+                          onClick={() => onDeleteTenant(tenant.id || tenant._id)}
+                          className="btn btn-danger btn-sm"
+                          style={{ padding: '0.3rem 0.55rem', fontSize: '0.75rem', lineHeight: '1.25' }}
+                          title="Delete Tenant"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

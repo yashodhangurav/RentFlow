@@ -124,6 +124,61 @@ export const apiService = {
     }
   },
 
+  // Properties API (MongoDB Atlas)
+  async getProperties() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/properties`);
+      const data = await res.json();
+      return data.success ? data.data : null;
+    } catch (err) {
+      console.warn('Backend properties API offline, using local state.', err);
+      return null;
+    }
+  },
+
+  async createProperty(propertyData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/properties`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(propertyData)
+      });
+      const data = await res.json();
+      return data.success ? data.data : null;
+    } catch (err) {
+      console.error('Error creating property in MongoDB:', err);
+      return null;
+    }
+  },
+
+  async updateProperty(id, propertyData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/properties/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(propertyData)
+      });
+      const data = await res.json();
+      return data.success ? data.data : null;
+    } catch (err) {
+      console.error('Error updating property in MongoDB:', err);
+      return null;
+    }
+  },
+
+  async deleteProperty(id) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/properties/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      return data.success;
+    } catch (err) {
+      console.error('Error deleting property from MongoDB:', err);
+      return false;
+    }
+  },
+
   // Seed MongoDB Atlas Database
   async seedDatabase() {
     try {

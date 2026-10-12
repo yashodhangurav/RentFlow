@@ -39,12 +39,16 @@ const MainAppContent = () => {
   // Tab & Search State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Selected Tenant for Dedicated Detail Page
   const [detailPageTenant, setDetailPageTenant] = useState(null);
 
   // Domain Data States
-  const [properties, setProperties] = useState(INITIAL_PROPERTIES);
+  const [properties, setProperties] = useState(() => {
+    const saved = localStorage.getItem('estatepulse_properties');
+    return saved ? JSON.parse(saved) : INITIAL_PROPERTIES;
+  });
 
   const [tenants, setTenants] = useState(() => {
     const saved = localStorage.getItem('estatepulse_tenants');
@@ -61,6 +65,17 @@ const MainAppContent = () => {
   // Fetch Data from MongoDB Atlas on Load
   useEffect(() => {
     const fetchMongoData = async () => {
+      const dbProperties = await apiService.getProperties();
+      if (dbProperties && dbProperties.length > 0) {
+        const formattedProps = dbProperties.map(p => ({
+          ...p,
+          id: p.customId || p._id || p.id,
+          availableRooms: p.availableRooms && p.availableRooms.length > 0 ? p.availableRooms : ['Room 101', 'Room 102', 'Room 201', 'Room 202', 'Room 301']
+        }));
+        setProperties(formattedProps);
+        localStorage.setItem('estatepulse_properties', JSON.stringify(formattedProps));
+      }
+
       const dbTenants = await apiService.getTenants();
       if (dbTenants && dbTenants.length > 0) {
         const formattedTenants = dbTenants.map(t => ({
@@ -122,6 +137,10 @@ const MainAppContent = () => {
 
   // LocalStorage Backup Sync
   useEffect(() => {
+    localStorage.setItem('estatepulse_properties', JSON.stringify(properties));
+  }, [properties]);
+
+  useEffect(() => {
     localStorage.setItem('estatepulse_tenants', JSON.stringify(tenants));
   }, [tenants]);
 
@@ -158,10 +177,84 @@ const MainAppContent = () => {
     setActiveTab('tenant-detail');
   };
 
-  // Handle Save New Property & Units
-  const handleSaveProperty = (newProp) => {
-    setProperties(prev => [newProp, ...prev]);
-    addToast(`Added new property ${newProp.name} with ${newProp.units} units!`, 'success');
+  // Handle Save New Property (Owner Only)
+  const handleSaveProperty = async (newProp) => {
+    if (!isAdmin) {
+      addToast('Unauthorized: Only property owner Yashodhan Gurav can add properties.', 'error');
+      return;
+    }
+    const createdMongo = await apiService.createProperty(newProp);
+    const finalProp = createdMongo ? { ...newProp, ...createdMongo, id: createdMongo.customId || createdMongo._id || newProp.id } : newProp;
+    setProperties(prev => [finalProp, ...prev]);
+    addToast(`Added new property "${finalProp.name}" with ${finalProp.units || finalProp.availableRooms?.length} units!`, 'success');
+  };
+
+  // Handle Edit / Change Existing Property (Owner Only)
+  const handleEditProperty = async (updatedProp) => {
+    if (!isAdmin) {
+      addToast('Unauthorized: Only property owner Yashodhan Gurav can edit properties.', 'error');
+      return;
+    }
+    const targetId = updatedProp.id || updatedProp._id;
+    await apiService.updateProperty(targetId, updatedProp);
+    setProperties(prev => prev.map(p => (p.id === targetId || p._id === targetId) ? { ...p, ...updatedProp } : p));
+    addToast(`Updated property details for "${updatedProp.name}"!`, 'success');
+  };
+
+  // Handle Delete Property (Owner Only)
+  const handleDeleteProperty = async (propId) => {
+    if (!isAdmin) {
+      addToast('Unauthorized: Only property owner Yashodhan Gurav can delete properties.', 'error');
+      return;
+    }
+    const targetProp = properties.find(p => p.id === propId || p._id === propId);
+    await apiService.deleteProperty(propId);
+    setProperties(prev => prev.filter(p => p.id !== propId && p._id !== propId));
+    addToast(`Deleted property "${targetProp?.name || 'Property'}" from portfolio.`, 'warning');
+  };
+
+  // Handle Update Room Numbers & Allocation (Owner Only)
+  const handleUpdatePropertyRooms = async (propId, updatedRooms, renamedMap = {}) => {
+    if (!isAdmin) {
+      addToast('Unauthorized: Only property owner Yashodhan Gurav can modify room numbers.', 'error');
+      return;
+    }
+    const targetProp = properties.find(p => p.id === propId || p._id === propId);
+    const propName = targetProp?.name || '';
+
+    // 1. Update property in state and backend
+    const updatedProps = properties.map(p => {
+      if (p.id === propId || p._id === propId) {
+        return { ...p, availableRooms: updatedRooms, units: updatedRooms.length };
+      }
+      return p;
+    });
+    setProperties(updatedProps);
+    await apiService.updateProperty(propId, { availableRooms: updatedRooms, units: updatedRooms.length });
+
+    // 2. If any room numbers were renamed, update affected tenants
+    const renamedKeys = Object.keys(renamedMap);
+    if (renamedKeys.length > 0) {
+      let updatedCount = 0;
+      const updatedTenantsList = tenants.map(t => {
+        const isThisProperty = t.propertyId === propId || t.propertyId === targetProp?._id || t.propertyName === propName;
+        const currentRoom = t.roomNo || t.roomNumber || t.unit;
+        if (isThisProperty && renamedMap[currentRoom]) {
+          const newRoom = renamedMap[currentRoom];
+          updatedCount++;
+          apiService.updateTenant(t.id || t._id, { roomNumber: newRoom, unit: newRoom, roomNo: newRoom });
+          return { ...t, roomNo: newRoom, roomNumber: newRoom, unit: newRoom };
+        }
+        return t;
+      });
+
+      if (updatedCount > 0) {
+        setTenants(updatedTenantsList);
+        addToast(`Renamed room units & updated ${updatedCount} tenant record(s) automatically!`, 'info');
+      }
+    }
+
+    addToast(`Updated room unit roster for "${targetProp?.name || 'Property'}" (${updatedRooms.length} units configured).`, 'success');
   };
 
   // Tenant Uploads Payment Proof Handler
@@ -462,6 +555,8 @@ const MainAppContent = () => {
         setActiveTab={setActiveTab}
         pendingRentCount={pendingRentTenants.length}
         openMaintenanceCount={maintenance.filter(m => m.status !== 'Resolved').length}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
       />
 
       {/* Main View Area */}
@@ -473,6 +568,7 @@ const MainAppContent = () => {
           theme={theme}
           setTheme={setTheme}
           urgentAlerts={urgentAlerts}
+          onToggleMobileMenu={() => setMobileMenuOpen(prev => !prev)}
           onOpenAddTenant={() => {
             setTenantToEdit(null);
             setIsTenantModalOpen(true);
@@ -552,6 +648,9 @@ const MainAppContent = () => {
               properties={properties}
               tenants={tenants}
               onAddProperty={handleSaveProperty}
+              onEditProperty={handleEditProperty}
+              onDeleteProperty={handleDeleteProperty}
+              onUpdateRooms={handleUpdatePropertyRooms}
             />
           )}
 

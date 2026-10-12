@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { Tenant } from './models/Tenant.js';
 import { RentPayment } from './models/RentPayment.js';
+import { Property } from './models/Property.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,6 +86,43 @@ export const seedDatabase = async () => {
     console.log('Clearing existing records and seeding demo data into Atlas database: tenant_management_db...');
     await Tenant.deleteMany({});
     await RentPayment.deleteMany({});
+    await Property.deleteMany({});
+
+    const initialProps = [
+      {
+        customId: "prop-1",
+        name: "Sai Kripa Nivas (Home Residency)",
+        address: "Plot 42, Viman Nagar, Pune, Maharashtra",
+        houseNo: "Plot 42",
+        type: "Residential Rental Rooms & Apartments",
+        units: 6,
+        availableRooms: ["Room 101", "Room 102", "Room 201", "Room 202", "Room 301", "Room 302"],
+        occupied: 5,
+        monthlyRevenue: 71000,
+        image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&auto=format&fit=crop&q=80",
+        manager: "Yashodhan Gurav (Owner)",
+        amenities: ["High-speed Wi-Fi", "24/7 CCTV Security", "Power Backup", "2-Wheeler / Car Parking", "Water Purifier"],
+        yearBuilt: 2022
+      },
+      {
+        customId: "prop-2",
+        name: "Shree Ganesh Heights",
+        address: "Sector 17, Vashi, Navi Mumbai, Maharashtra",
+        houseNo: "Building B",
+        type: "Residential Flats",
+        units: 6,
+        availableRooms: ["Flat 101", "Flat 102", "Flat 201", "Flat 202", "Flat 301", "Flat 302"],
+        occupied: 0,
+        monthlyRevenue: 0,
+        image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&auto=format&fit=crop&q=80",
+        manager: "Yashodhan Gurav (Owner)",
+        amenities: ["Solar Water Heater", "Lift Backup", "Security Guard", "Intercom"],
+        yearBuilt: 2021
+      }
+    ];
+
+    const insertedProperties = await Property.insertMany(initialProps);
+    console.log(`✅ Seeded ${insertedProperties.length} properties into MongoDB Atlas!`);
 
     const insertedTenants = await Tenant.insertMany(initialTenants);
     console.log(`✅ Seeded ${insertedTenants.length} tenants into MongoDB Atlas!`);

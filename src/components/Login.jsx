@@ -65,54 +65,40 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(ellipse at top left, #1e1b4b 0%, #0b0f19 60%, #090d16 100%)',
+      background: 'var(--bg-main)',
       padding: '1.5rem',
-      position: 'relative',
-      overflow: 'hidden'
+      position: 'relative'
     }}>
-      {/* Decorative Glow */}
-      <div style={{
-        position: 'absolute',
-        top: '-15%',
-        left: '-10%',
-        width: '500px',
-        height: '500px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%)',
-        filter: 'blur(60px)',
-        pointerEvents: 'none'
-      }} />
-
-      <div className="glass-card animate-fade-in" style={{
+      <div className="animate-fade-in" style={{
         width: '100%',
-        maxWidth: '490px',
-        padding: '2.5rem 2rem',
-        borderRadius: '24px',
-        background: 'rgba(17, 24, 39, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6)'
+        maxWidth: '440px',
+        padding: '2rem',
+        borderRadius: 'var(--radius-md)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-xl)'
       }}>
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '64px',
-            height: '64px',
-            borderRadius: '18px',
-            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-            boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)',
-            marginBottom: '0.85rem'
+            width: '44px',
+            height: '44px',
+            borderRadius: 'var(--radius-sm)',
+            background: 'var(--accent-primary-subtle)',
+            border: '1px solid var(--accent-primary-ring)',
+            color: 'var(--accent-primary)',
+            marginBottom: '0.75rem'
           }}>
-            <Building2 size={32} color="#ffffff" />
+            <Building2 size={24} />
           </div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', letterSpacing: '-0.03em' }}>
-            Estate<span className="gradient-text">Pulse</span>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
+            EstatePulse
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
-            Tenant & Property Management Portal
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '4px 0 0 0' }}>
+            Institutional Property & Remittance Platform
           </p>
         </div>
 
@@ -120,60 +106,65 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '12px',
-          padding: '4px',
-          marginBottom: '1.5rem'
+          background: 'var(--bg-hover)',
+          borderRadius: 'var(--radius-sm)',
+          border: '1px solid var(--border-color)',
+          padding: '3px',
+          marginBottom: '1.25rem'
         }}>
           <button
             onClick={() => { setPortalType('admin'); setError(''); }}
             style={{
-              padding: '0.6rem',
-              borderRadius: '9px',
+              padding: '0.5rem',
+              borderRadius: 'var(--radius-xs)',
               border: 'none',
-              background: portalType === 'admin' ? 'var(--accent-primary)' : 'transparent',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '0.85rem',
+              background: portalType === 'admin' ? 'var(--bg-card)' : 'transparent',
+              color: portalType === 'admin' ? 'var(--text-primary)' : 'var(--text-muted)',
+              boxShadow: portalType === 'admin' ? 'var(--shadow-sm)' : 'none',
+              fontWeight: 600,
+              fontSize: '0.8rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
+              transition: 'var(--transition)'
             }}
           >
-            <ShieldCheck size={16} /> 👑 Owner Portal
+            <ShieldCheck size={14} color={portalType === 'admin' ? 'var(--accent-primary)' : 'inherit'} /> Property Owner
           </button>
           <button
             onClick={() => { setPortalType('tenant'); setError(''); }}
             style={{
-              padding: '0.6rem',
-              borderRadius: '9px',
+              padding: '0.5rem',
+              borderRadius: 'var(--radius-xs)',
               border: 'none',
-              background: portalType === 'tenant' ? 'var(--accent-primary)' : 'transparent',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '0.85rem',
+              background: portalType === 'tenant' ? 'var(--bg-card)' : 'transparent',
+              color: portalType === 'tenant' ? 'var(--text-primary)' : 'var(--text-muted)',
+              boxShadow: portalType === 'tenant' ? 'var(--shadow-sm)' : 'none',
+              fontWeight: 600,
+              fontSize: '0.8rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
+              transition: 'var(--transition)'
             }}
           >
-            <User size={16} /> 👤 Tenant Portal
+            <User size={14} color={portalType === 'tenant' ? 'var(--accent-primary)' : 'inherit'} /> Resident Portal
           </button>
         </div>
 
         {error && (
           <div style={{
-            background: 'var(--accent-danger-bg)',
-            border: '1px solid rgba(244, 63, 94, 0.3)',
-            borderRadius: '10px',
-            padding: '0.75rem 1rem',
-            color: 'var(--accent-danger)',
-            fontSize: '0.85rem',
-            marginBottom: '1.25rem',
+            background: 'var(--status-alert-bg)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-xs)',
+            padding: '0.625rem 0.875rem',
+            color: 'var(--status-alert-text)',
+            fontSize: '0.8rem',
+            marginBottom: '1rem',
             textAlign: 'center'
           }}>
             {error}
@@ -184,43 +175,43 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
         {portalType === 'admin' ? (
           <div>
             <div style={{
-              background: 'rgba(99, 102, 241, 0.1)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-              borderRadius: '12px',
-              padding: '0.75rem 1rem',
+              background: 'var(--bg-hover)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 'var(--radius-xs)',
+              padding: '0.625rem 0.875rem',
               marginBottom: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
             }}>
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#a5b4fc' }}>
-                  👑 Property Owner Portal
+                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  Demo Portfolio Access
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Full management & verification access
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Full owner administration
                 </div>
               </div>
               <button
                 type="button"
                 onClick={handleQuickAdminLogin}
-                className="btn btn-primary btn-sm"
-                style={{ borderRadius: '8px', fontSize: '0.75rem' }}
+                className="btn btn-secondary btn-sm"
+                style={{ fontSize: '0.725rem', padding: '3px 8px' }}
               >
-                Quick Owner Login
+                Auto Fill
               </button>
             </div>
 
-            <form onSubmit={handleAdminSubmit}>
-              <div className="form-group">
+            <form onSubmit={handleAdminSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" htmlFor="admin-email">Owner Email Address</label>
                 <div style={{ position: 'relative' }}>
-                  <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Mail size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     id="admin-email"
                     type="email"
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{ paddingLeft: '32px' }}
                     value={adminEmail}
                     onChange={(e) => setAdminEmail(e.target.value)}
                     required
@@ -228,15 +219,15 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <div className="form-group" style={{ marginBottom: '0.5rem' }}>
                 <label className="form-label" htmlFor="admin-password">Password</label>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     id="admin-password"
                     type="password"
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{ paddingLeft: '32px' }}
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     required
@@ -247,52 +238,52 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', fontSize: '0.925rem' }}
+                style={{ width: '100%', padding: '0.625rem', justifyContent: 'center' }}
                 disabled={loading}
               >
-                {loading ? 'Authenticating...' : <>Login to Owner Portal <ArrowRight size={18} /></>}
+                {loading ? 'Authenticating...' : <>Sign In to Portfolio <ArrowRight size={14} /></>}
               </button>
             </form>
           </div>
         ) : (
-          /* TENANT PORTAL FORM (AUTHENTICATED WITH OWNER CREATED CREDENTIALS) */
+          /* TENANT PORTAL FORM */
           <div>
             <div style={{
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '12px',
-              padding: '0.75rem 1rem',
-              marginBottom: '1.25rem'
+              background: 'var(--bg-hover)',
+              border: '1px solid var(--border-color)',
+              borderRadius: 'var(--radius-xs)',
+              padding: '0.625rem 0.875rem',
+              marginBottom: '1rem'
             }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#6ee7b7', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Key size={14} /> Owner-Assigned Credentials Login:
+              <div style={{ fontSize: '0.725rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Key size={12} /> Registered Resident Accounts:
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 {tenants.slice(0, 3).map((t) => (
                   <button
                     key={t.id || t._id}
                     type="button"
                     onClick={() => handleQuickTenantLogin(t)}
                     className="btn btn-secondary btn-sm"
-                    style={{ justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                    style={{ justifyContent: 'space-between', fontSize: '0.75rem', padding: '6px 10px', minHeight: '34px', lineHeight: '1.35' }}
                   >
-                    <span><strong>{t.name}</strong> ({t.roomNo || t.unit}) • Pass: <code>{t.password || 'Rahul101Password'}</code></span>
-                    <span style={{ color: 'var(--accent-primary)', fontSize: '0.7rem' }}>Fill →</span>
+                    <span><strong>{t.name}</strong> ({t.roomNo || t.unit})</span>
+                    <span style={{ color: 'var(--accent-primary)', fontSize: '0.725rem', fontWeight: 600 }}>Select →</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <form onSubmit={handleTenantSubmit}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="tenant-email-input">Tenant Email / Username *</label>
+            <form onSubmit={handleTenantSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" htmlFor="tenant-email-input">Resident Username / Email *</label>
                 <div style={{ position: 'relative' }}>
-                  <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Mail size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     id="tenant-email-input"
                     type="text"
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
+                    style={{ paddingLeft: '32px' }}
                     placeholder="e.g. rahul.sharma@example.com"
                     value={tenantEmail}
                     onChange={(e) => setTenantEmail(e.target.value)}
@@ -301,16 +292,16 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label className="form-label" htmlFor="tenant-password-input">Assigned Password *</label>
+              <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                <label className="form-label" htmlFor="tenant-password-input">Portal Password *</label>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Lock size={15} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     id="tenant-password-input"
                     type="password"
                     className="form-input"
-                    style={{ paddingLeft: '40px' }}
-                    placeholder="Enter password assigned by owner"
+                    style={{ paddingLeft: '32px' }}
+                    placeholder="Assigned password"
                     value={tenantPassword}
                     onChange={(e) => setTenantPassword(e.target.value)}
                     required
@@ -321,18 +312,18 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ width: '100%', padding: '0.8rem', borderRadius: '12px', fontSize: '0.925rem' }}
+                style={{ width: '100%', padding: '0.625rem', justifyContent: 'center' }}
                 disabled={loading}
               >
-                {loading ? 'Validating Credentials...' : <>Sign In to My Tenant Portal <ArrowRight size={18} /></>}
+                {loading ? 'Validating...' : <>Access Resident Portal <ArrowRight size={14} /></>}
               </button>
             </form>
           </div>
         )}
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          <CheckCircle2 size={13} color="var(--accent-success)" style={{ display: 'inline', marginRight: '4px' }} />
-          Encrypted Authentication System
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.725rem', color: 'var(--text-muted)' }}>
+          <CheckCircle2 size={12} color="var(--status-paid-text)" style={{ display: 'inline', marginRight: '4px' }} />
+          End-to-End Encrypted Session
         </div>
       </div>
     </div>

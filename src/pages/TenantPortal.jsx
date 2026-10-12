@@ -4,23 +4,15 @@ import { formatINR } from '../utils/formatters';
 import { apiService } from '../api/index';
 import { 
   Home, 
-  User, 
-  Phone, 
   FileText, 
   ShieldCheck, 
   Upload, 
-  DollarSign, 
   CheckCircle2, 
   Clock, 
   LogOut, 
-  Download, 
-  Printer, 
-  AlertTriangle,
   History,
   Zap,
-  Calendar,
-  AlertCircle,
-  Cloud
+  Building2
 } from 'lucide-react';
 
 export const TenantPortal = ({ 
@@ -136,261 +128,274 @@ export const TenantPortal = ({
   const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem 1rem' }}>
+    <div className="animate-fade-in" style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.5rem 1rem' }}>
+      {/* Brand Header Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+          <div style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: 'var(--radius-sm)',
+            background: 'var(--accent-primary)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 1px 3px rgba(37, 99, 235, 0.35)'
+          }}>
+            <Building2 size={16} />
+          </div>
+          <div>
+            <span style={{ fontWeight: '700', fontSize: '0.9rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              EstatePulse
+            </span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginLeft: '6px' }}>
+              • Resident Portal
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="glass-card" style={{
-        padding: '1.5rem 1.75rem',
-        background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(30, 27, 75, 0.6) 100%)',
-        border: '1px solid rgba(99, 102, 241, 0.3)',
+      <div className="fintech-card" style={{
+        padding: '1.25rem 1.4rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1rem'
+        gap: '0.85rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
           <img
             src={myTenant?.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"}
             alt={myTenant?.name}
-            style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-primary)' }}
+            style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)', objectFit: 'cover', border: '1px solid var(--border-color)' }}
           />
           <div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: '800' }}>
-              Welcome, <span className="gradient-text">{myTenant?.name}</span> 👋
+            <h1 style={{ fontSize: '1.15rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>
+              Welcome, {myTenant?.name}
             </h1>
-            <div style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: '700', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <Home size={15} /> Resident of {roomName} • {myTenant?.propertyName || 'Sai Kripa Nivas'}
+            <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Home size={13} color="var(--accent-primary)" />
+              <span className="tabular-nums">{roomName}</span> • {myTenant?.propertyName || 'Sai Kripa Nivas'}
             </div>
           </div>
         </div>
 
         <button onClick={logout} className="btn btn-secondary btn-sm" id="tenant-logout-btn">
-          <LogOut size={15} /> Sign Out Portal
+          <LogOut size={13} /> Sign Out
         </button>
       </div>
 
-      {/* ⏰ AUTOMATIC MONTHLY DEADLINE ALERT BANNER */}
+      {/* MONTHLY DEADLINE ALERT BANNER */}
       {!isPaid && (
         <div style={{
-          background: isPastDeadline ? 'var(--accent-danger-bg)' : 'var(--accent-warning-bg)',
-          border: `2px solid ${isPastDeadline ? 'rgba(244,63,94,0.6)' : 'rgba(245,158,11,0.6)'}`,
-          borderRadius: 'var(--radius-md)',
-          padding: '1.25rem 1.5rem',
+          background: isPastDeadline ? 'var(--status-danger-bg)' : 'var(--status-warning-bg)',
+          border: `1px solid ${isPastDeadline ? 'var(--status-danger-border)' : 'var(--status-warning-border)'}`,
+          borderRadius: 'var(--radius-sm)',
+          padding: '0.85rem 1.15rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '1rem'
+          gap: '0.75rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '50%',
-              background: isPastDeadline ? 'var(--accent-danger)' : 'var(--accent-warning)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff'
-            }}>
-              <Clock size={24} />
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <Clock size={18} color={isPastDeadline ? 'var(--status-danger)' : 'var(--status-warning)'} />
             <div>
-              <div style={{ fontWeight: '800', fontSize: '1.05rem', color: isPastDeadline ? 'var(--accent-danger)' : 'var(--accent-warning)' }}>
-                ⏰ Monthly Deadline Notice: Rent & Electricity Bill Due by 10th!
+              <div style={{ fontWeight: '600', fontSize: '0.85rem', color: isPastDeadline ? 'var(--status-danger)' : 'var(--status-warning)' }}>
+                Rent & Electricity Dues Scheduled by 10th
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-primary)', marginTop: '1px' }}>
                 {isPastDeadline ? (
-                  <span>🚨 <strong>10-Day Grace Period Ended!</strong> Please upload rent & electricity bill proofs immediately.</span>
+                  <span>Grace period ended. Please upload transaction proofs below.</span>
                 ) : (
-                  <span>Owner Grace Period: You have <strong>{daysLeftToDeadline} day(s) remaining</strong> before the 10th August deadline. Upload receipts below to Cloudinary.</span>
+                  <span>You have <strong className="tabular-nums">{daysLeftToDeadline} day(s)</strong> remaining before the monthly 10th deadline.</span>
                 )}
               </div>
             </div>
           </div>
 
-          <span className={`badge ${isPastDeadline ? 'badge-danger' : 'badge-warning'}`} style={{ fontSize: '0.85rem', padding: '0.4rem 1rem', fontWeight: '800' }}>
-            {isPastDeadline ? 'Past Deadline' : `${daysLeftToDeadline} Days Left`}
+          <span className={`badge ${isPastDeadline ? 'badge-danger' : 'badge-warning'} tabular-nums`}>
+            {isPastDeadline ? 'Past Due' : `${daysLeftToDeadline} Days Left`}
           </span>
         </div>
       )}
 
       {/* Grid Row: My Room Info | Pay Rent & Upload Electricity Bill */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '1.15rem' }}>
         {/* Card 1: My Room Info & Agreement */}
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="fintech-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Home size={18} color="var(--accent-primary)" /> My Tenancy Details
+            <h3 style={{ fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+              <Home size={15} color="var(--accent-primary)" /> Tenancy Summary
             </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Assigned Room</span>
-                <strong style={{ color: 'var(--accent-primary)' }}>{roomName}</strong>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Assigned Unit</span>
+                <span className="tabular-nums" style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{roomName}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Monthly Rent</span>
-                <strong style={{ color: 'var(--accent-success)', fontSize: '1.05rem' }}>{formatINR(myTenant?.rentAmount)}</strong>
+                <span className="tabular-nums" style={{ color: 'var(--status-success)', fontWeight: '600' }}>{formatINR(myTenant?.rentAmount)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Monthly Deadline</span>
-                <strong style={{ color: 'var(--accent-warning)' }}>10th of Every Month</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Payment Due</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>10th of Every Month</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Aadhar / Govt ID No.</span>
-                <code style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '2px 8px', borderRadius: '4px', color: 'var(--accent-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Govt / Aadhar ID</span>
+                <code style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '1px 5px', borderRadius: 'var(--radius-xs)', fontSize: '0.725rem', color: 'var(--text-primary)' }}>
                   {myTenant?.aadharId || 'Verified ID'}
                 </code>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.2rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Agreement Expiry</span>
-                <strong style={{ color: daysUntilExpiry <= 7 ? 'var(--accent-warning)' : 'inherit' }}>
+                <span className="tabular-nums" style={{ color: daysUntilExpiry <= 7 ? 'var(--status-warning)' : 'var(--text-primary)', fontWeight: '500' }}>
                   {new Date(myTenant?.agreementExpiryDate || myTenant?.leaseEnd || '2026-12-31').toLocaleDateString()}
-                  {daysUntilExpiry <= 7 && <span style={{ fontSize: '0.7rem', display: 'block', color: 'var(--accent-warning)' }}>⚠️ Expires in {daysUntilExpiry} days</span>}
-                </strong>
+                </span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.85rem' }}>
             <button
               onClick={() => onOpenDocument(myTenant?.idProofCloudUrl || myTenant?.idProofDoc || 'Aadhar_Card.pdf', 'My Aadhar ID Proof', myTenant?.name)}
-              className="btn btn-outline btn-sm"
-              style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', gap: '4px' }}
+              className="btn btn-secondary btn-sm"
+              style={{ flex: 1, justifyContent: 'center', fontSize: '0.725rem', gap: '3px' }}
             >
-              <ShieldCheck size={14} /> ID Proof
+              <ShieldCheck size={13} /> View ID
             </button>
             <button
               onClick={() => onOpenDocument(myTenant?.agreementCloudUrl || myTenant?.agreementPdf || 'Agreement.pdf', 'My Rental Agreement', myTenant?.name, myTenant?.agreementExpiryDate)}
               className="btn btn-secondary btn-sm"
-              style={{ flex: 1, justifyContent: 'center', fontSize: '0.75rem', gap: '4px' }}
+              style={{ flex: 1, justifyContent: 'center', fontSize: '0.725rem', gap: '3px' }}
             >
-              <FileText size={14} color="var(--accent-warning)" /> Agreement PDF
+              <FileText size={13} /> Agreement PDF
             </button>
           </div>
         </div>
 
         {/* Card 2: MONTHLY RENT & ELECTRICITY BILL PROOF SUBMISSION */}
-        <div className="glass-card" style={{ padding: '1.5rem', border: isPaid ? '1px solid var(--accent-success)' : isVerificationPending ? '1px solid var(--accent-warning)' : '2px solid rgba(244, 63, 94, 0.6)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Cloud size={18} color="var(--accent-warning)" /> Upload to Cloudinary (dysl5mfsh)
+        <div className="fintech-card" style={{ padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0 }}>
+              Submit Payment Proof
             </h3>
 
-            <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`} style={{ fontWeight: '800' }}>
-              {isPaid ? '✓ Rent & Bill Verified' : isVerificationPending ? '⏳ Awaiting Owner Approval' : '🚨 Action Required'}
+            <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`}>
+              {isPaid ? 'Verified' : isVerificationPending ? 'Audit Pending' : 'Action Required'}
             </span>
           </div>
 
           {uploadingCloud && (
-            <div style={{ background: 'rgba(99,102,241,0.15)', padding: '0.5rem', borderRadius: '6px', color: 'var(--accent-primary)', fontSize: '0.75rem', textAlign: 'center', marginBottom: '0.75rem', fontWeight: '700' }}>
-              ☁️ Uploading screenshot to Cloudinary...
+            <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '0.4rem', borderRadius: 'var(--radius-sm)', color: 'var(--accent-primary)', fontSize: '0.725rem', textAlign: 'center', marginBottom: '0.65rem', fontWeight: '500' }}>
+              Uploading screenshot...
             </div>
           )}
 
           {isPaid ? (
-            <div style={{ background: 'var(--accent-success-bg)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '12px', padding: '1.25rem', textAlign: 'center' }}>
-              <CheckCircle2 size={36} color="var(--accent-success)" style={{ margin: '0 auto 0.5rem' }} />
-              <h4 style={{ fontWeight: '800', color: 'var(--accent-success)', fontSize: '1.1rem' }}>Rent & Electricity Bill Verified!</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                Your rent of <strong>{formatINR(myTenant?.rentAmount)}</strong> and monthly current bill for {selectedMonth} have been verified by the owner.
+            <div style={{ background: 'var(--status-success-bg)', border: '1px solid var(--status-success-border)', borderRadius: 'var(--radius-sm)', padding: '1rem', textAlign: 'center' }}>
+              <CheckCircle2 size={28} color="var(--status-success)" style={{ margin: '0 auto 0.35rem' }} />
+              <h4 style={{ fontWeight: '600', color: 'var(--status-success)', fontSize: '0.95rem' }}>Payment Verified</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                Your rent of <strong className="tabular-nums">{formatINR(myTenant?.rentAmount)}</strong> for {selectedMonth} has been audited and approved.
               </p>
               {currentMonthPayment && (
                 <button
                   onClick={() => onViewReceipt(currentMonthPayment)}
-                  className="btn btn-outline btn-sm"
-                  style={{ marginTop: '1rem', gap: '4px' }}
+                  className="btn btn-secondary btn-sm"
+                  style={{ marginTop: '0.75rem', gap: '4px' }}
                 >
-                  <FileText size={14} /> Download Official Receipt
+                  <FileText size={13} /> View Receipt
                 </button>
               )}
             </div>
           ) : isVerificationPending ? (
-            <div style={{ background: 'var(--accent-warning-bg)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '12px', padding: '1.25rem', textAlign: 'center' }}>
-              <Clock size={36} color="var(--accent-warning)" style={{ margin: '0 auto 0.5rem' }} />
-              <h4 style={{ fontWeight: '800', color: 'var(--accent-warning)', fontSize: '1.1rem' }}>Proofs Uploaded to Cloudinary!</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', marginTop: '4px' }}>
-                Your payment proof screenshots stored on Cloudinary (dysl5mfsh) are <strong>awaiting owner verification</strong>.
+            <div style={{ background: 'var(--status-warning-bg)', border: '1px solid var(--status-warning-border)', borderRadius: 'var(--radius-sm)', padding: '1rem', textAlign: 'center' }}>
+              <Clock size={28} color="var(--status-warning)" style={{ margin: '0 auto 0.35rem' }} />
+              <h4 style={{ fontWeight: '600', color: 'var(--status-warning)', fontSize: '0.95rem' }}>Audit In Progress</h4>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                Your payment screenshot is awaiting owner verification.
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmitProof}>
               {/* Step 1: Rent Payment Proof */}
-              <div style={{ marginBottom: '1rem', background: 'rgba(99, 102, 241, 0.05)', padding: '0.85rem', borderRadius: '8px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>
-                  1. Monthly Rent Payment Proof (Due: {formatINR(myTenant?.rentAmount)})
+              <div style={{ marginBottom: '0.75rem', background: 'var(--bg-subtle)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
+                  1. Rent Payment Screenshot (<span className="tabular-nums">{formatINR(myTenant?.rentAmount)}</span>)
                 </div>
                 
-                <div className="form-group" style={{ marginBottom: '0.6rem' }}>
-                  <div style={{
-                    padding: '0.5rem 0.75rem',
-                    background: 'var(--bg-input)',
-                    border: '1px dashed var(--accent-primary)',
-                    borderRadius: 'var(--radius-sm)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}>
-                    <Upload size={15} color="var(--accent-primary)" />
-                    <input
-                      type="file"
-                      id="tenant-rent-proof-file"
-                      style={{ display: 'none' }}
-                      onChange={handleRentProofUpload}
-                      accept="image/*,.pdf"
-                    />
-                    <label htmlFor="tenant-rent-proof-file" style={{ cursor: 'pointer', fontSize: '0.775rem', color: 'var(--accent-primary)', fontWeight: '600' }}>
-                      {rentProofName ? `Cloudinary Uploaded: ${rentProofName}` : 'Upload Rent Payment UPI Screenshot'}
-                    </label>
-                  </div>
+                <div style={{
+                  padding: '0.45rem 0.65rem',
+                  background: 'var(--bg-input)',
+                  border: '1px dashed var(--border-color)',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  marginBottom: '0.45rem'
+                }}>
+                  <Upload size={13} color="var(--text-muted)" />
+                  <input
+                    type="file"
+                    id="tenant-rent-proof-file"
+                    style={{ display: 'none' }}
+                    onChange={handleRentProofUpload}
+                    accept="image/*,.pdf"
+                  />
+                  <label htmlFor="tenant-rent-proof-file" style={{ cursor: 'pointer', fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: '500' }}>
+                    {rentProofName ? `File: ${rentProofName}` : 'Upload Rent Screenshot'}
+                  </label>
                 </div>
 
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="UPI Ref ID (e.g. UPI-984210)"
+                  placeholder="UPI / Transaction Ref ID"
                   value={rentRef}
                   onChange={(e) => setRentRef(e.target.value)}
-                  style={{ fontSize: '0.775rem', padding: '0.4rem 0.75rem' }}
+                  style={{ fontSize: '0.75rem', height: '30px' }}
                 />
               </div>
 
               {/* Step 2: Electricity / Current Bill Payment Proof */}
-              <div style={{ marginBottom: '1.25rem', background: 'rgba(245, 158, 11, 0.05)', padding: '0.85rem', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--accent-warning)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Zap size={14} /> 2. Monthly Electricity / Current Bill Proof
+              <div style={{ marginBottom: '0.85rem', background: 'var(--bg-subtle)', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <Zap size={13} color="var(--status-warning)" /> 2. Electricity Bill Receipt
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.4rem' }}>
                   <input
                     type="number"
-                    className="form-input"
-                    placeholder="Bill Amount (₹)"
+                    className="form-input tabular-nums"
+                    placeholder="Amount (₹)"
                     value={electricityAmount}
                     onChange={(e) => setElectricityAmount(e.target.value)}
-                    style={{ fontSize: '0.775rem', padding: '0.4rem 0.75rem' }}
+                    style={{ fontSize: '0.75rem', height: '30px' }}
                   />
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="Bill Consumer / Consumer ID"
+                    placeholder="Consumer / Bill ID"
                     value={electricityRef}
                     onChange={(e) => setElectricityRef(e.target.value)}
-                    style={{ fontSize: '0.775rem', padding: '0.4rem 0.75rem' }}
+                    style={{ fontSize: '0.75rem', height: '30px' }}
                   />
                 </div>
 
                 <div style={{
-                  padding: '0.5rem 0.75rem',
+                  padding: '0.45rem 0.65rem',
                   background: 'var(--bg-input)',
-                  border: '1px dashed var(--accent-warning)',
+                  border: '1px dashed var(--border-color)',
                   borderRadius: 'var(--radius-sm)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem'
+                  gap: '0.45rem'
                 }}>
-                  <Upload size={15} color="var(--accent-warning)" />
+                  <Upload size={13} color="var(--text-muted)" />
                   <input
                     type="file"
                     id="tenant-elec-proof-file"
@@ -398,8 +403,8 @@ export const TenantPortal = ({
                     onChange={handleElectricityProofUpload}
                     accept="image/*,.pdf"
                   />
-                  <label htmlFor="tenant-elec-proof-file" style={{ cursor: 'pointer', fontSize: '0.775rem', color: 'var(--accent-warning)', fontWeight: '600' }}>
-                    {electricityProofName ? `Cloudinary Uploaded: ${electricityProofName}` : 'Upload Electricity Bill Paid Screenshot'}
+                  <label htmlFor="tenant-elec-proof-file" style={{ cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                    {electricityProofName ? `File: ${electricityProofName}` : 'Upload Bill Receipt'}
                   </label>
                 </div>
               </div>
@@ -407,10 +412,10 @@ export const TenantPortal = ({
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ width: '100%', padding: '0.75rem', justifyContent: 'center', fontSize: '0.875rem' }}
+                style={{ width: '100%', padding: '0.55rem', justifyContent: 'center', fontSize: '0.8125rem' }}
                 disabled={isSubmitting || uploadingCloud}
               >
-                {isSubmitting ? 'Saving to Cloudinary & Atlas...' : 'Submit Proofs to Cloudinary for Owner Verification ✓'}
+                {isSubmitting ? 'Submitting Proofs...' : 'Submit Payment Proofs'}
               </button>
             </form>
           )}
@@ -418,57 +423,57 @@ export const TenantPortal = ({
       </div>
 
       {/* My Payment History */}
-      <div className="glass-card" style={{ padding: '1.5rem' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <History size={18} color="var(--accent-primary)" /> My Rent & Electricity Payment History (Cloudinary Backed)
+      <div className="fintech-card" style={{ padding: '1.25rem' }}>
+        <h3 style={{ fontSize: '0.95rem', fontWeight: '600', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+          <History size={16} color="var(--accent-primary)" /> My Payment History
         </h3>
 
-        <div className="table-responsive">
+        <div className="table-responsive" style={{ marginTop: '0.75rem' }}>
           <table className="custom-table">
             <thead>
               <tr>
                 <th>Billing Period</th>
                 <th>Payment Date</th>
-                <th>Rent Amount</th>
-                <th>Cloudinary Electricity Proof</th>
+                <th style={{ textAlign: 'right' }}>Rent Amount</th>
+                <th>Current Bill Proof</th>
                 <th>Status</th>
-                <th>Receipt</th>
+                <th style={{ textAlign: 'right' }}>Receipt</th>
               </tr>
             </thead>
             <tbody>
               {myPayments.length === 0 ? (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)' }}>
-                    No payment records yet. Upload your rent and current bill proof above.
+                    No payment records on file yet.
                   </td>
                 </tr>
               ) : (
                 myPayments.map((pay) => (
                   <tr key={pay.id || pay._id}>
                     <td>
-                      <strong style={{ fontSize: '0.9rem' }}>{pay.month || pay.period}</strong>
+                      <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{pay.month || pay.period}</span>
                     </td>
                     <td>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <span className="tabular-nums" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                         {pay.paymentDate || pay.paidDate ? new Date(pay.paymentDate || pay.paidDate).toLocaleDateString() : 'Submitted'}
                       </span>
                     </td>
-                    <td>
-                      <strong style={{ color: 'var(--accent-success)', fontSize: '0.95rem' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--status-success)' }}>
                         {formatINR(pay.amountPaid || pay.amount)}
-                      </strong>
+                      </span>
                     </td>
                     <td>
                       {pay.electricityProofFile ? (
                         <button
                           onClick={() => onOpenDocument(pay.electricityProofFile, 'Electricity / Current Bill Receipt', myTenant?.name)}
-                          className="btn btn-outline btn-sm"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.725rem', gap: '4px' }}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', gap: '3px', lineHeight: '1.25' }}
                         >
-                          <Zap size={13} color="var(--accent-warning)" /> View Receipt
+                          <Zap size={11} color="var(--status-warning)" /> Receipt
                         </button>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>No Bill Attached</span>
+                        <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>None</span>
                       )}
                     </td>
                     <td>
@@ -476,21 +481,21 @@ export const TenantPortal = ({
                         pay.status === 'paid' || pay.status === 'Paid' ? 'badge-success' :
                         pay.status === 'verification_pending' ? 'badge-warning' : 'badge-danger'
                       }`}>
-                        {pay.status === 'paid' || pay.status === 'Paid' ? '✓ Verified' :
-                         pay.status === 'verification_pending' ? '⏳ Verification Pending' : '🚨 Pending'}
+                        {pay.status === 'paid' || pay.status === 'Paid' ? 'Verified' :
+                         pay.status === 'verification_pending' ? 'Pending Audit' : 'Pending'}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'right' }}>
                       {(pay.status === 'paid' || pay.status === 'Paid') ? (
                         <button
                           onClick={() => onViewReceipt(pay)}
-                          className="btn btn-outline btn-sm"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.725rem' }}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', lineHeight: '1.25' }}
                         >
-                          View Receipt
+                          Receipt
                         </button>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pending</span>
+                        <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>—</span>
                       )}
                     </td>
                   </tr>

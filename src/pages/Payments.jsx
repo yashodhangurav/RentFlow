@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
 import { formatINR } from '../utils/formatters';
-import { CreditCard, DollarSign, Plus, Download, Printer, Search, CheckCircle2, Clock, AlertTriangle, Calendar, RefreshCw, FileText, Check, Zap, Eye, Image as ImageIcon } from 'lucide-react';
+import { 
+  CreditCard, 
+  DollarSign, 
+  Clock, 
+  Check, 
+  Zap, 
+  ImageIcon,
+  Receipt
+} from 'lucide-react';
 
-export const Payments = ({ payments = [], tenants = [], onToggleRentStatus, onVerifyPayment, onRecordPayment, onViewReceipt, onOpenDocument }) => {
+export const Payments = ({ 
+  payments = [], 
+  tenants = [], 
+  onToggleRentStatus, 
+  onVerifyPayment, 
+  onRecordPayment, 
+  onViewReceipt, 
+  onOpenDocument 
+}) => {
   const [selectedMonth, setSelectedMonth] = useState('August 2026');
   const [filterStatus, setFilterStatus] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,35 +69,36 @@ export const Payments = ({ payments = [], tenants = [], onToggleRentStatus, onVe
   const verificationCount = tenantRentMatrix.filter(i => i.isVerificationPending).length;
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Top Banner */}
-      <div className="glass-card" style={{
-        padding: '1.5rem',
-        background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(30, 27, 75, 0.5) 100%)',
+      <div className="fintech-card" style={{
+        padding: '1.15rem 1.4rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1.25rem'
+        gap: '0.85rem'
       }}>
         <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CreditCard size={24} color="var(--accent-primary)" /> Monthly Rent & Current Bill Collection
+          <h1 style={{ fontSize: '1.15rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+            <CreditCard size={18} color="var(--accent-primary)" /> Rent Collection Ledger
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-            Verify tenant payment proof submissions or mark rent as Settled/Pending.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: '2px 0 0 0' }}>
+            Verify payment proofs, audit collection status, and issue rent receipts
           </p>
         </div>
 
         {/* Month Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <label htmlFor="rent-month-selector" style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-muted)' }}>Billing Period:</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <label htmlFor="rent-month-selector" style={{ fontSize: '0.75rem', fontWeight: '500', color: 'var(--text-muted)' }}>
+            Billing Period:
+          </label>
           <select
             id="rent-month-selector"
             className="form-select"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            style={{ width: '170px', fontWeight: '700', borderRadius: '20px', padding: '0.5rem 1rem' }}
+            style={{ width: '160px', height: '36px', fontSize: '0.8125rem' }}
           >
             <option value="August 2026">August 2026</option>
             <option value="July 2026">July 2026</option>
@@ -93,82 +110,78 @@ export const Payments = ({ payments = [], tenants = [], onToggleRentStatus, onVe
 
       {/* 10-DAY DEADLINE OWNER ALERT BANNER */}
       <div style={{
-        background: 'rgba(245, 158, 11, 0.08)',
-        border: '1px solid rgba(245, 158, 11, 0.4)',
-        borderRadius: 'var(--radius-md)',
-        padding: '0.85rem 1.25rem',
+        background: 'var(--status-warning-bg)',
+        border: '1px solid var(--status-warning-border)',
+        borderRadius: 'var(--radius-sm)',
+        padding: '0.75rem 1rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        fontSize: '0.825rem'
+        fontSize: '0.775rem',
+        flexWrap: 'wrap',
+        gap: '0.5rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--accent-warning)', fontWeight: '700' }}>
-          <Clock size={18} /> Owner Grace Period Policy: Monthly rent & electricity bill due by 10th of every month.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--status-warning)', fontWeight: '600' }}>
+          <Clock size={16} /> Grace Period Policy: Rent & electricity dues are scheduled by 10th of every month.
         </div>
-        <span style={{ color: 'var(--text-secondary)' }}>
-          {pendingCount} tenant(s) approaching deadline
+        <span className="tabular-nums" style={{ color: 'var(--text-secondary)' }}>
+          {pendingCount} tenant(s) pending settlement
         </span>
       </div>
 
-      {/* Top Collection Counters */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-        <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--accent-success)' }}>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-            Verified Paid Rents
+      {/* Collection Metric KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem' }}>
+        <div className="fintech-card" style={{ padding: '1.15rem' }}>
+          <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Verified Collections
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: 'var(--accent-success)', margin: '0.2rem 0' }}>
+          <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: '600', color: 'var(--status-success)', margin: '0.35rem 0 0.15rem' }}>
             {formatINR(totalPaidAmount)}
           </div>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
-            <strong>{paidCount}</strong> tenants settled
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            <span className="tabular-nums">{paidCount}</span> settled units
           </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--accent-warning)' }}>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-            Pending Proof Verifications
+        <div className="fintech-card" style={{ padding: '1.15rem' }}>
+          <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Proof Verifications
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: 'var(--accent-warning)', margin: '0.2rem 0' }}>
-            {verificationCount} Proofs
+          <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: '600', color: 'var(--status-warning)', margin: '0.35rem 0 0.15rem' }}>
+            {verificationCount} Pending
           </div>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
-            Proof submissions awaiting approval
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Tenant screenshots awaiting audit
           </div>
         </div>
 
-        <div className="glass-card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--accent-danger)' }}>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-            Pending Rent Dues
+        <div className="fintech-card" style={{ padding: '1.15rem' }}>
+          <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Outstanding Arrears
           </div>
-          <div style={{ fontSize: '1.65rem', fontWeight: '800', color: 'var(--accent-danger)', margin: '0.2rem 0' }}>
+          <div className="tabular-nums" style={{ fontSize: '1.45rem', fontWeight: '600', color: 'var(--status-danger)', margin: '0.35rem 0 0.15rem' }}>
             {formatINR(totalPendingAmount)}
           </div>
-          <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
-            <strong>{pendingCount}</strong> tenants unpaid
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            <span className="tabular-nums">{pendingCount}</span> overdue accounts
           </div>
         </div>
       </div>
 
       {/* Control Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
           {[
-            { id: 'All', label: 'All Rooms' },
+            { id: 'All', label: 'All Units' },
             { id: 'Verification', label: `Pending Verification (${verificationCount})` },
             { id: 'Paid', label: 'Verified Paid' },
-            { id: 'Pending', label: 'Rent Pending' }
+            { id: 'Pending', label: 'Overdue' }
           ].map((st) => (
             <button
               key={st.id}
               onClick={() => setFilterStatus(st.id)}
-              className="btn btn-sm"
-              style={{
-                borderRadius: '20px',
-                background: filterStatus === st.id ? (st.id === 'Verification' ? 'var(--accent-warning)' : st.id === 'Pending' ? 'var(--accent-danger)' : 'var(--accent-primary)') : 'rgba(255,255,255,0.05)',
-                color: '#ffffff',
-                border: '1px solid var(--border-color)',
-                fontWeight: filterStatus === st.id ? '700' : '500'
-              }}
+              className={`btn btn-sm ${filterStatus === st.id ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}
             >
               {st.label}
             </button>
@@ -177,117 +190,125 @@ export const Payments = ({ payments = [], tenants = [], onToggleRentStatus, onVe
 
         <button 
           onClick={() => onRecordPayment(null)}
-          className="btn btn-primary btn-sm"
+          className="btn btn-secondary btn-sm"
+          style={{ height: '32px' }}
         >
-          <DollarSign size={16} /> Log Manual Payment
+          <DollarSign size={14} /> Log Manual Payment
         </button>
       </div>
 
       {/* Rent & Electricity Proof Matrix Table */}
-      <div className="glass-card" style={{ padding: '1.25rem' }}>
-        <div className="table-responsive">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Room No</th>
-                <th>Tenant Name</th>
-                <th>Monthly Rent</th>
-                <th>Rent Status</th>
-                <th>Uploaded Proof Records</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMatrix.map(({ tenant, payment, isPaid, isVerificationPending, roomNo, rentAmount }) => (
-                <tr key={tenant.id || tenant._id} style={{ background: isVerificationPending ? 'rgba(245, 158, 11, 0.06)' : !isPaid ? 'rgba(244, 63, 94, 0.04)' : 'transparent' }}>
-                  <td>
-                    <strong style={{ fontSize: '0.95rem', color: 'var(--accent-primary)' }}>{roomNo}</strong>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <img src={tenant.avatar} alt={tenant.name} style={{ width: '34px', height: '34px', borderRadius: '50%', objectFit: 'cover' }} />
-                      <div>
-                        <strong style={{ fontSize: '0.9rem' }}>{tenant.name}</strong>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tenant.phone}</div>
-                      </div>
+      <div className="table-responsive">
+        <table className="custom-table">
+          <thead>
+            <tr>
+              <th>Unit</th>
+              <th>Tenant</th>
+              <th style={{ textAlign: 'right' }}>Monthly Rent</th>
+              <th>Status</th>
+              <th>Audit Verification Proofs</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredMatrix.map(({ tenant, payment, isPaid, isVerificationPending, roomNo, rentAmount }) => (
+              <tr key={tenant.id || tenant._id}>
+                <td>
+                  <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.825rem', whiteSpace: 'nowrap' }}>
+                    {roomNo}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <img 
+                      src={tenant.avatar} 
+                      alt={tenant.name} 
+                      style={{ 
+                        width: '28px', 
+                        height: '28px', 
+                        borderRadius: 'var(--radius-sm)', 
+                        objectFit: 'cover',
+                        border: '1px solid var(--border-color)'
+                      }} 
+                    />
+                    <div>
+                      <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{tenant.name}</span>
+                      <div className="tabular-nums" style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{tenant.phone}</div>
                     </div>
-                  </td>
-                  <td>
-                    <strong style={{ color: 'var(--text-primary)', fontSize: '0.95rem' }}>{formatINR(rentAmount)}</strong>
-                  </td>
-                  <td>
-                    <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`} style={{ fontWeight: '800' }}>
-                      {isPaid ? 'Verified Paid' : isVerificationPending ? 'Verification Pending' : 'Pending'}
-                    </span>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                      {payment?.proofFile ? (
-                        <button
-                          onClick={() => onOpenDocument(payment.proofFile, 'Uploaded Rent Payment Screenshot', tenant.name, '', payment, () => onVerifyPayment(tenant, payment))}
-                          className="btn btn-outline btn-sm"
-                          style={{ padding: '0.25rem 0.6rem', fontSize: '0.725rem', gap: '5px', borderColor: 'var(--accent-success)', color: 'var(--accent-success)' }}
-                        >
-                          <ImageIcon size={14} /> View Rent Proof File
-                        </button>
-                      ) : null}
+                  </div>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                    {formatINR(rentAmount)}
+                  </span>
+                </td>
+                <td>
+                  <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`}>
+                    {isPaid ? 'Paid' : isVerificationPending ? 'Verification Pending' : 'Pending'}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    {payment?.proofFile ? (
+                      <button
+                        onClick={() => onOpenDocument(payment.proofFile, 'Uploaded Rent Payment Screenshot', tenant.name, '', payment, () => onVerifyPayment(tenant, payment))}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.725rem', gap: '4px', width: 'fit-content', lineHeight: '1.25' }}
+                      >
+                        <ImageIcon size={12} color="var(--accent-primary)" /> Rent Proof File
+                      </button>
+                    ) : null}
 
-                      {payment?.electricityProofFile ? (
-                        <button
-                          onClick={() => onOpenDocument(payment.electricityProofFile, 'Uploaded Electricity / Current Bill Receipt', tenant.name, '', payment, () => onVerifyPayment(tenant, payment))}
-                          className="btn btn-outline btn-sm"
-                          style={{ padding: '0.25rem 0.6rem', fontSize: '0.725rem', gap: '5px', borderColor: 'var(--accent-warning)', color: 'var(--accent-warning)' }}
-                        >
-                          <Zap size={14} /> View Current Bill File
-                        </button>
-                      ) : null}
+                    {payment?.electricityProofFile ? (
+                      <button
+                        onClick={() => onOpenDocument(payment.electricityProofFile, 'Uploaded Electricity / Current Bill Receipt', tenant.name, '', payment, () => onVerifyPayment(tenant, payment))}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '0.3rem 0.6rem', fontSize: '0.725rem', gap: '4px', width: 'fit-content', lineHeight: '1.25' }}
+                      >
+                        <Zap size={12} color="var(--status-warning)" /> Current Bill File
+                      </button>
+                    ) : null}
 
-                      {!payment?.proofFile && !payment?.electricityProofFile && (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>No Proofs Attached</span>
+                    {!payment?.proofFile && !payment?.electricityProofFile && (
+                      <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>No Files Attached</span>
+                    )}
+                  </div>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  {isVerificationPending ? (
+                    <button
+                      onClick={() => onVerifyPayment ? onVerifyPayment(tenant, payment) : onToggleRentStatus(tenant, selectedMonth, false)}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', gap: '3px', lineHeight: '1.25' }}
+                    >
+                      <Check size={13} /> Approve
+                    </button>
+                  ) : (
+                    <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                      <button
+                        onClick={() => onToggleRentStatus(tenant, selectedMonth, isPaid)}
+                        className={`btn btn-sm ${isPaid ? 'btn-secondary' : 'btn-primary'}`}
+                        style={{ fontSize: '0.75rem', padding: '0.3rem 0.65rem', lineHeight: '1.25' }}
+                      >
+                        {isPaid ? 'Mark Pending' : 'Mark Paid'}
+                      </button>
+
+                      {isPaid && payment && (
+                        <button
+                          onClick={() => onViewReceipt(payment)}
+                          className="btn btn-secondary btn-sm"
+                          style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', gap: '3px', lineHeight: '1.25' }}
+                        >
+                          <Receipt size={12} /> Receipt
+                        </button>
                       )}
                     </div>
-                  </td>
-                  <td>
-                    {isVerificationPending ? (
-                      <button
-                        onClick={() => onVerifyPayment ? onVerifyPayment(tenant, payment) : onToggleRentStatus(tenant, selectedMonth, false)}
-                        className="btn btn-primary btn-sm"
-                        style={{ background: 'var(--accent-success)', borderColor: 'var(--accent-success)', fontSize: '0.775rem', padding: '0.35rem 0.75rem', gap: '4px', fontWeight: '800' }}
-                      >
-                        <Check size={15} /> Verify & Approve Rent
-                      </button>
-                    ) : (
-                      <div style={{ display: 'flex', gap: '0.4rem' }}>
-                        <button
-                          onClick={() => onToggleRentStatus(tenant, selectedMonth, isPaid)}
-                          className={`btn btn-sm ${isPaid ? 'btn-secondary' : 'btn-primary'}`}
-                          style={{
-                            fontSize: '0.75rem',
-                            padding: '0.3rem 0.75rem',
-                            background: !isPaid ? 'var(--accent-success)' : undefined,
-                            borderColor: !isPaid ? 'var(--accent-success)' : undefined
-                          }}
-                        >
-                          {isPaid ? 'Mark Pending' : 'Mark Paid'}
-                        </button>
-
-                        {isPaid && payment && (
-                          <button
-                            onClick={() => onViewReceipt(payment)}
-                            className="btn btn-outline btn-sm"
-                            style={{ fontSize: '0.725rem', padding: '0.3rem 0.5rem' }}
-                          >
-                            Receipt
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

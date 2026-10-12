@@ -1,22 +1,14 @@
 import React from 'react';
 import { downloadFile } from '../utils/downloadHelper';
+import { formatINR } from '../utils/formatters';
 import { 
   ArrowLeft, 
-  Phone, 
-  Mail, 
-  Calendar, 
   FileText, 
   ShieldCheck, 
-  CreditCard, 
   DollarSign, 
   Edit, 
   History, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Clock,
-  Printer,
-  Download,
-  Building,
+  Download, 
   Home
 } from 'lucide-react';
 
@@ -58,209 +50,215 @@ export const TenantDetailPage = ({
   const agreementName = tenant.agreementPdfName || tenant.agreementPdf || `Agreement_${roomName}.pdf`;
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       {/* Top Breadcrumb Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
         <button
           onClick={onBack}
           className="btn btn-secondary btn-sm"
-          style={{ gap: '0.5rem' }}
+          style={{ gap: '0.45rem' }}
         >
-          <ArrowLeft size={16} /> Back to Tenants Directory
+          <ArrowLeft size={14} /> Back to Tenants Directory
         </button>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => onEdit(tenant)}
             className="btn btn-secondary btn-sm"
-            style={{ gap: '0.4rem' }}
+            style={{ gap: '0.35rem' }}
           >
-            <Edit size={15} /> Edit Details
+            <Edit size={13} /> Edit Profile
           </button>
           <button
             onClick={() => onRecordPayment(tenant)}
             className="btn btn-primary btn-sm"
-            style={{ gap: '0.4rem' }}
+            style={{ gap: '0.35rem' }}
           >
-            <DollarSign size={15} /> Log Rent Payment
+            <DollarSign size={13} /> Log Rent
           </button>
         </div>
       </div>
 
       {/* Main Tenant Profile Banner */}
-      <div className="glass-card" style={{
-        padding: '1.75rem',
-        background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(30, 27, 75, 0.4) 100%)',
+      <div className="fintech-card" style={{
+        padding: '1.25rem 1.4rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '1.5rem'
+        gap: '1.25rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img
             src={tenant.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"}
             alt={tenant.name}
             style={{
-              width: '85px',
-              height: '85px',
-              borderRadius: '50%',
+              width: '64px',
+              height: '64px',
+              borderRadius: 'var(--radius-sm)',
               objectFit: 'cover',
-              border: '3px solid var(--accent-primary)',
-              boxShadow: '0 8px 20px var(--accent-glow)'
+              border: '1px solid var(--border-color)'
             }}
           />
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: '800' }}>{tenant.name}</h1>
-              <span className={`badge ${tenant.paymentStatus === 'Paid' ? 'badge-success' : 'badge-danger'}`}>
-                {tenant.paymentStatus === 'Paid' ? 'Rent Paid' : '🚨 Rent Pending'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>
+                {tenant.name}
+              </h1>
+              <span className={`badge ${tenant.paymentStatus === 'Paid' ? 'badge-success' : 'badge-warning'}`}>
+                {tenant.paymentStatus === 'Paid' ? 'Settled' : 'Pending'}
               </span>
             </div>
-            <div style={{ fontSize: '1rem', color: 'var(--accent-primary)', fontWeight: '700', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Home size={16} /> {roomName} • {tenant.propertyName || 'Greenwood Residency'}
+            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Home size={13} color="var(--accent-primary)" />
+              <span className="tabular-nums">{roomName}</span> • {tenant.propertyName || 'Portfolio Residency'}
             </div>
-            <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
-              Joined: <strong>{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</strong> • Phone: <strong>{tenant.phone}</strong>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Move-In: <span className="tabular-nums">{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</span> • Phone: <span className="tabular-nums">{tenant.phone}</span>
             </div>
           </div>
         </div>
 
-        {/* Quick Rent Counter Card */}
+        {/* Quick Rate Counter Card */}
         <div style={{
-          background: 'rgba(0, 0, 0, 0.3)',
+          background: 'var(--bg-subtle)',
           border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-md)',
-          padding: '1rem 1.5rem',
+          borderRadius: 'var(--radius-sm)',
+          padding: '0.75rem 1.15rem',
           textAlign: 'right'
         }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', uppercase: 'true' }}>Monthly Rent Amount</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--accent-success)' }}>
-            ₹{tenant.rentAmount?.toLocaleString()}
+          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Monthly Rate</div>
+          <div className="tabular-nums" style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--status-success)', marginTop: '1px' }}>
+            {formatINR(tenant.rentAmount)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Deposit Held: ₹{(tenant.deposit || tenant.rentAmount * 2)?.toLocaleString()}
+          <div style={{ fontSize: '0.725rem', color: 'var(--text-secondary)' }}>
+            Deposit: <span className="tabular-nums">{formatINR(tenant.deposit || tenant.rentAmount * 2)}</span>
           </div>
         </div>
       </div>
 
       {/* Grid Row: Documents & Identification | Agreement Details */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(270px, 1fr))', gap: '1.15rem' }}>
         {/* Box 1: Identification & ID Proof */}
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="fintech-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck size={18} color="var(--accent-primary)" /> Identity & Contact Information
+            <h3 style={{ fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+              <ShieldCheck size={16} color="var(--accent-primary)" /> Identity & Verification
             </h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Full Legal Name</span>
-                <strong>{tenant.name}</strong>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>{tenant.name}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Phone Number</span>
-                <strong>{tenant.phone}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Contact Phone</span>
+                <span className="tabular-nums" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>{tenant.phone}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Aadhar / Govt ID No.</span>
-                <code style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '2px 8px', borderRadius: '4px', color: 'var(--accent-primary)', fontWeight: '700' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Govt / Aadhar ID</span>
+                <code style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-color)', padding: '1px 6px', borderRadius: 'var(--radius-xs)', fontSize: '0.725rem', color: 'var(--text-primary)' }}>
                   {tenant.aadharId || tenant.idProof || 'Verified ID'}
                 </code>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Move-In / Joining Date</span>
-                <strong>{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.2rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Lease Inception</span>
+                <span className="tabular-nums" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                  {new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}
+                </span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.85rem' }}>
             <button
               onClick={() => onOpenDocument(idDocName, 'Aadhar / Govt ID Proof', tenant.name, '', null, null, idDocUrl)}
-              className="btn btn-outline btn-sm"
-              style={{ justifyContent: 'center', gap: '0.4rem' }}
+              className="btn btn-secondary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.35rem' }}
             >
-              <ShieldCheck size={15} /> View ID Proof
+              <ShieldCheck size={13} /> View ID
             </button>
 
             <button
               onClick={() => downloadFile(idDocUrl, idDocName)}
-              className="btn btn-primary btn-sm"
-              style={{ justifyContent: 'center', gap: '0.4rem', fontWeight: '700' }}
+              className="btn btn-secondary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.35rem' }}
             >
-              <Download size={15} /> Download ID
+              <Download size={13} /> Download
             </button>
           </div>
         </div>
 
         {/* Box 2: Agreement Management & Expiry Status */}
-        <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: isExpiringSoon || isExpired ? '1px solid rgba(245, 158, 11, 0.6)' : '1px solid var(--border-color)' }}>
+        <div className="fintech-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileText size={18} color="var(--accent-warning)" /> Rental Agreement Details
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+                <FileText size={16} color="var(--status-warning)" /> Lease Agreement
               </h3>
-              <span className={`badge ${isExpired ? 'badge-danger' : isExpiringSoon ? 'badge-warning' : 'badge-success'}`}>
-                {isExpired ? 'Expired' : isExpiringSoon ? `Expires in ${daysUntilExpiry} Days` : 'Active Contract'}
+              <span className={`badge ${isExpired ? 'badge-danger' : isExpiringSoon ? 'badge-warning' : 'badge-success'} tabular-nums`}>
+                {isExpired ? 'Expired' : isExpiringSoon ? `${daysUntilExpiry} Days Left` : 'Active Term'}
               </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Agreement Document</span>
-                <strong>{agreementName}</strong>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Agreement File</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>{agreementName}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Contract Start Date</span>
-                <strong>{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Commencement Date</span>
+                <span className="tabular-nums" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
+                  {new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}
+                </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.5rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Agreement Expiry Date</span>
-                <strong style={{ color: isExpiringSoon || isExpired ? 'var(--accent-warning)' : 'inherit' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.2rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Expiry Date</span>
+                <span className="tabular-nums" style={{ color: isExpiringSoon || isExpired ? 'var(--status-warning)' : 'var(--text-primary)', fontWeight: '500' }}>
                   {new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}
-                </strong>
+                </span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginTop: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '0.85rem' }}>
             <button
               onClick={() => onOpenDocument(agreementName, 'Rental Agreement PDF', tenant.name, tenant.agreementExpiryDate || tenant.leaseEnd, null, null, agreementUrl)}
               className="btn btn-secondary btn-sm"
-              style={{ justifyContent: 'center', gap: '0.4rem' }}
+              style={{ justifyContent: 'center', gap: '0.35rem' }}
             >
-              <FileText size={15} color="var(--accent-warning)" /> Preview PDF
+              <FileText size={13} color="var(--status-warning)" /> Preview PDF
             </button>
 
             <button
               onClick={() => downloadFile(agreementUrl, agreementName)}
-              className="btn btn-primary btn-sm"
-              style={{ justifyContent: 'center', gap: '0.4rem', fontWeight: '700' }}
+              className="btn btn-secondary btn-sm"
+              style={{ justifyContent: 'center', gap: '0.35rem' }}
             >
-              <Download size={15} /> Download Agreement
+              <Download size={13} /> Download
             </button>
           </div>
         </div>
       </div>
 
       {/* FULL RENT PAYMENT HISTORY TIMELINE TABLE */}
-      <div className="glass-card" style={{ padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+      <div className="fintech-card" style={{ padding: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <History size={18} color="var(--accent-primary)" /> Full Rent Payment & Activity History
+            <h3 style={{ fontSize: '0.95rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.45rem', margin: 0 }}>
+              <History size={16} color="var(--accent-primary)" /> Payment & Settlement Ledger
             </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Complete record of all monthly rent settlements, receipts, and tenancy history events.
+            <p style={{ fontSize: '0.725rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+              Historical payment transactions, reference IDs, and verification receipts
             </p>
           </div>
 
           <button
             onClick={() => onRecordPayment(tenant)}
             className="btn btn-primary btn-sm"
+            style={{ height: '32px' }}
           >
-            + Record New Rent Payment
+            + Record Rent
           </button>
         </div>
 
@@ -269,62 +267,66 @@ export const TenantDetailPage = ({
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Billing Period</th>
+                <th>Period</th>
                 <th>Payment Date</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
+                <th style={{ textAlign: 'right' }}>Amount</th>
+                <th>Method</th>
                 <th>Reference Code</th>
-                <th>Rent Status</th>
-                <th>Receipt</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Receipt</th>
               </tr>
             </thead>
             <tbody>
               {tenantPayments.length === 0 ? (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                    No payment history recorded yet. Click "Record New Rent Payment" to log rent.
+                    No payment transactions recorded for this tenant yet.
                   </td>
                 </tr>
               ) : (
                 tenantPayments.map((pay) => (
                   <tr key={pay.id || pay._id}>
                     <td>
-                      <strong style={{ fontSize: '0.9rem' }}>{pay.month || pay.period}</strong>
-                    </td>
-                    <td>
-                      <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
-                        {pay.paymentDate ? new Date(pay.paymentDate).toLocaleDateString() : pay.paidDate || 'Pending'}
+                      <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>
+                        {pay.month || pay.period}
                       </span>
                     </td>
                     <td>
-                      <strong style={{ color: 'var(--accent-success)', fontSize: '0.95rem' }}>
-                        ₹{(pay.amountPaid || pay.amount)?.toLocaleString()}
-                      </strong>
+                      <span className="tabular-nums" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        {pay.paymentDate ? new Date(pay.paymentDate).toLocaleDateString() : pay.paidDate || 'Pending'}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="tabular-nums" style={{ fontWeight: '600', color: 'var(--status-success)' }}>
+                        {formatINR(pay.amountPaid || pay.amount)}
+                      </span>
                     </td>
                     <td>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{pay.paymentMethod || pay.method}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                        {pay.paymentMethod || pay.method}
+                      </span>
                     </td>
                     <td>
-                      <code style={{ fontSize: '0.75rem', background: 'rgba(99, 102, 241, 0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--accent-primary)' }}>
+                      <code style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
                         {pay.reference || 'N/A'}
                       </code>
                     </td>
                     <td>
-                      <span className={`badge ${pay.status === 'paid' || pay.status === 'Paid' ? 'badge-success' : 'badge-danger'}`}>
-                        {pay.status === 'paid' || pay.status === 'Paid' ? 'Paid' : '🚨 Pending'}
+                      <span className={`badge ${pay.status === 'paid' || pay.status === 'Paid' ? 'badge-success' : 'badge-warning'}`}>
+                        {pay.status === 'paid' || pay.status === 'Paid' ? 'Settled' : 'Pending'}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'right' }}>
                       {(pay.status === 'paid' || pay.status === 'Paid') ? (
                         <button
                           onClick={() => onViewReceipt(pay)}
-                          className="btn btn-outline btn-sm"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.725rem' }}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', lineHeight: '1.25' }}
                         >
                           View Receipt
                         </button>
                       ) : (
-                        <span style={{ fontSize: '0.75rem', color: 'var(--accent-danger)' }}>Unpaid</span>
+                        <span style={{ fontSize: '0.725rem', color: 'var(--status-danger)' }}>Unpaid</span>
                       )}
                     </td>
                   </tr>
