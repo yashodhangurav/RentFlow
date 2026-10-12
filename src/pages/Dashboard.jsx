@@ -66,9 +66,18 @@ export const Dashboard = ({
           <h1 className="dashboard-title">
             <Building2 size={19} color="var(--accent-primary)" /> Property Executive Ledger
           </h1>
-          <p className="dashboard-subtitle">
-            Portfolio Overview • <strong className="tabular-nums" style={{ color: 'var(--text-primary)' }}>{totalTenants} Active Units</strong> • <strong className="tabular-nums" style={{ color: 'var(--status-success)' }}>{paidTenants.length} Settled</strong> • <strong className="tabular-nums" style={{ color: pendingTenants.length > 0 ? 'var(--status-danger)' : 'var(--text-muted)' }}>{pendingTenants.length} Arrears</strong>
-          </p>
+          <div className="dashboard-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
+            <span>Portfolio Status:</span>
+            <span className="badge badge-primary tabular-nums" style={{ fontSize: '0.725rem', fontWeight: '600' }}>
+              {totalTenants} Active Units
+            </span>
+            <span className="badge badge-success tabular-nums" style={{ fontSize: '0.725rem', fontWeight: '600' }}>
+              {paidTenants.length} Settled
+            </span>
+            <span className={`badge ${pendingTenants.length > 0 ? 'badge-danger' : 'badge-secondary'} tabular-nums`} style={{ fontSize: '0.725rem', fontWeight: '600' }}>
+              {pendingTenants.length} Arrears
+            </span>
+          </div>
         </div>
 
         <div className="dashboard-header-actions">
@@ -280,13 +289,13 @@ export const Dashboard = ({
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Tenant Name</th>
-                <th>Unit</th>
-                <th>Contact</th>
-                <th style={{ textAlign: 'right' }}>Monthly Rent</th>
-                <th style={{ textAlign: 'right' }}>Security Deposit</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th style={{ width: '24%' }}>Tenant Name</th>
+                <th style={{ width: '12%' }}>Unit</th>
+                <th style={{ width: '16%' }}>Contact</th>
+                <th style={{ textAlign: 'right', width: '14%' }}>Monthly Rent</th>
+                <th style={{ textAlign: 'right', width: '14%' }}>Security Deposit</th>
+                <th style={{ textAlign: 'center', width: '10%' }}>Status</th>
+                <th style={{ textAlign: 'right', width: '10%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -337,7 +346,7 @@ export const Dashboard = ({
                         {formatINR(tenant.deposit || tenant.rentAmount * 2)}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'center' }}>
                       <span className={`badge ${isPending ? 'badge-warning' : 'badge-success'}`}>
                         {isPending ? 'Pending' : 'Paid'}
                       </span>

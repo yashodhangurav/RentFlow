@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Search, Bell, Sun, Moon, Plus, CheckCircle, X, FileText, ShieldAlert, Menu, Building2 } from 'lucide-react';
+import { Search, Bell, Sun, Moon, CheckCircle, X, FileText, ShieldAlert, Menu, Building2 } from 'lucide-react';
 
 export const Navbar = ({ 
   activeTab, 
   searchTerm, 
   setSearchTerm, 
-  onOpenAddTenant, 
   theme, 
   setTheme,
   urgentAlerts = [],
@@ -94,11 +93,11 @@ export const Navbar = ({
         </div>
 
         {/* Desktop View Title Header */}
-        <div className="hide-mobile" style={{ display: 'flex', alignItems: 'baseline', gap: '0.65rem', minWidth: 0 }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: '600', letterSpacing: '-0.01em', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
+          <h2 style={{ fontSize: '0.95rem', fontWeight: '600', letterSpacing: '-0.01em', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.25 }}>
             {getTitle()}
           </h2>
-          <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)', lineHeight: 1.25 }}>
             {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
@@ -138,19 +137,7 @@ export const Navbar = ({
       </div>
 
       {/* Right Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
-        {/* Add Tenant Primary Action */}
-        <button 
-          onClick={onOpenAddTenant}
-          className="btn btn-primary btn-sm" 
-          id="navbar-add-tenant-btn"
-          style={{ height: '32px', gap: '0.35rem', whiteSpace: 'nowrap' }}
-          aria-label="Register Tenant"
-        >
-          <Plus size={15} /> 
-          <span className="hide-mobile">Add Tenant</span>
-        </button>
-
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
         {/* Dark/Light Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

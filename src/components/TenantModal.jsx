@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../api/index';
-import { X, UserPlus, Building, Mail, FileText, Upload, CheckCircle2, Cloud, Camera, Key, Lock, RefreshCw } from 'lucide-react';
+import { X, UserPlus, Building, Mail, FileText, Upload, CheckCircle2, Cloud, Camera, Key, Lock, RefreshCw, User, CreditCard } from 'lucide-react';
 
 export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantToEdit }) => {
   const defaultProperty = properties[0] || { id: 'prop-1', name: 'Sai Kripa Nivas' };
@@ -267,39 +267,30 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1, minHeight: 0, overflowY: 'auto' }}>
             {/* PHOTO UPLOADER HEADER BOX */}
-            <div style={{
-              background: 'var(--bg-hover)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '1rem'
-            }}>
+            <div className="tenant-photo-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
                   <img
                     src={avatarPreview || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"}
                     alt="Tenant Profile"
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      width: '56px',
+                      height: '56px',
                       borderRadius: 'var(--radius-sm)',
                       objectFit: 'cover',
-                      border: '1px solid var(--border-color)'
+                      border: '1px solid var(--border-color)',
+                      display: 'block'
                     }}
                   />
                   <label htmlFor="tenant-photo-file-picker" style={{
                     position: 'absolute',
                     bottom: '-4px',
                     right: '-4px',
-                    width: '24px',
-                    height: '24px',
+                    width: '22px',
+                    height: '22px',
                     borderRadius: 'var(--radius-sm)',
                     background: 'var(--accent-primary)',
                     color: '#ffffff',
@@ -309,26 +300,26 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                     cursor: 'pointer',
                     boxShadow: 'var(--shadow-sm)'
                   }}>
-                    <Camera size={13} />
+                    <Camera size={12} />
                   </label>
                 </div>
 
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)', lineHeight: 1.3 }}>
                     Tenant Identity Photo
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                     Stored securely via Cloudinary
                   </div>
                   {photoStatusMsg && (
-                    <div style={{ fontSize: '0.725rem', color: 'var(--status-paid-text)', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <div style={{ fontSize: '0.725rem', color: 'var(--status-paid-text)', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <CheckCircle2 size={12} /> {photoStatusMsg}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div>
+              <div style={{ flexShrink: 0 }}>
                 <input
                   type="file"
                   id="tenant-photo-file-picker"
@@ -336,24 +327,19 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                   onChange={handleAvatarUpload}
                   accept="image/*"
                 />
-                <label htmlFor="tenant-photo-file-picker" className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', gap: '6px' }}>
+                <label htmlFor="tenant-photo-file-picker" className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', gap: '6px', whiteSpace: 'nowrap' }}>
                   <Upload size={13} /> Upload Photo
                 </label>
               </div>
             </div>
 
             {/* SECTION 1: PROPERTY & ROOM ALLOCATION */}
-            <div style={{
-              background: 'var(--bg-hover)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '1rem'
-            }}>
-              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="tenant-form-card">
+              <div className="tenant-section-header">
                 <Building size={14} /> 1. Property & Assigned Room Unit
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div className="tenant-grid-2">
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label" htmlFor="select-property-id">Building / Property *</label>
                   <select
@@ -387,26 +373,23 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
             </div>
 
             {/* SECTION 2: TENANT LOGIN CREDENTIALS */}
-            <div style={{
-              background: 'var(--bg-hover)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '1rem'
-            }}>
-              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="tenant-form-card">
+              <div className="tenant-section-header">
                 <Key size={14} /> 2. Tenant Portal Access
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+              <div className="tenant-grid-2">
                 <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label" htmlFor="tenant-login-email">Portal Username / Email *</label>
+                  <div className="tenant-label-row">
+                    <label className="form-label" htmlFor="tenant-login-email">Portal Username / Email *</label>
+                  </div>
                   <div style={{ position: 'relative' }}>
-                    <Mail size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <Mail size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       id="tenant-login-email"
                       type="text"
                       className="form-input"
-                      style={{ paddingLeft: '32px', fontSize: '0.825rem' }}
+                      style={{ paddingLeft: '34px', fontSize: '0.825rem' }}
                       required
                       placeholder="e.g. rahul@example.com"
                       value={formData.email}
@@ -416,23 +399,23 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                 </div>
 
                 <div className="form-group" style={{ marginBottom: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <label className="form-label" htmlFor="tenant-login-password" style={{ marginBottom: 0 }}>Password *</label>
+                  <div className="tenant-label-row">
+                    <label className="form-label" htmlFor="tenant-login-password">Password *</label>
                     <button
                       type="button"
                       onClick={handleGeneratePassword}
-                      style={{ background: 'none', border: 'none', color: 'var(--accent-primary)', fontSize: '0.725rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}
+                      className="tenant-generate-btn"
                     >
                       <RefreshCw size={11} /> Generate
                     </button>
                   </div>
                   <div style={{ position: 'relative' }}>
-                    <Lock size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <Lock size={14} color="var(--text-muted)" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     <input
                       id="tenant-login-password"
                       type="text"
                       className="form-input"
-                      style={{ paddingLeft: '32px', fontSize: '0.825rem', fontWeight: 600 }}
+                      style={{ paddingLeft: '34px', fontSize: '0.825rem', fontWeight: 600 }}
                       required
                       placeholder="Assign Password"
                       value={formData.password}
@@ -443,13 +426,13 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
               </div>
             </div>
 
-            {/* SECTION 3: RESIDENT INFO & FINANCIALS */}
-            <div>
-              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                3. Resident Details & Financial Terms
+            {/* SECTION 3: RESIDENT IDENTITY DETAILS */}
+            <div className="tenant-form-card">
+              <div className="tenant-section-header">
+                <User size={14} /> 3. Resident Identity Details
               </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', marginBottom: '0.875rem' }}>
+
+              <div className="tenant-grid-2">
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label" htmlFor="tenant-name">Full Legal Name *</label>
                   <input
@@ -477,7 +460,7 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '0.875rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" htmlFor="tenant-aadhar">Aadhar / National ID Number *</label>
                 <input
                   id="tenant-aadhar"
@@ -489,9 +472,15 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                   onChange={(e) => setFormData({ ...formData, aadharId: e.target.value })}
                 />
               </div>
+            </div>
 
-              {/* RENT AND ADVANCE DEPOSIT FIELDS */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', background: 'var(--bg-hover)', padding: '0.875rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', marginBottom: '0.875rem' }}>
+            {/* SECTION 4: FINANCIAL & LEASE TERMS */}
+            <div className="tenant-form-card">
+              <div className="tenant-section-header">
+                <CreditCard size={14} /> 4. Financial & Lease Terms
+              </div>
+
+              <div className="tenant-grid-2">
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label" htmlFor="tenant-rent">Monthly Rent (₹) *</label>
                   <input
@@ -523,36 +512,44 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label" htmlFor="tenant-joining">Move-in / Lease Commencement Date *</label>
-                <input
-                  id="tenant-joining"
-                  type="date"
-                  className="form-input tabular-nums"
-                  required
-                  value={formData.joiningDate}
-                  onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                />
+              <div className="tenant-grid-2">
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" htmlFor="tenant-joining">Move-in Date *</label>
+                  <input
+                    id="tenant-joining"
+                    type="date"
+                    className="form-input tabular-nums"
+                    required
+                    value={formData.joiningDate}
+                    onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" htmlFor="tenant-expiry-date">Lease Expiry Date *</label>
+                  <input
+                    id="tenant-expiry-date"
+                    type="date"
+                    className="form-input tabular-nums"
+                    required
+                    value={formData.agreementExpiryDate}
+                    onChange={(e) => setFormData({ ...formData, agreementExpiryDate: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* SECTION 4: CLOUDINARY DOCUMENT UPLOADS */}
-            <div>
-              <div style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Cloud size={14} /> 4. Verification Documents
+            {/* SECTION 5: CLOUDINARY DOCUMENT UPLOADS */}
+            <div className="tenant-form-card">
+              <div className="tenant-section-header">
+                <Cloud size={14} /> 5. Verification Documents
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', marginBottom: '0.875rem' }}>
+              <div className="tenant-grid-2">
                 {/* File Upload 1: ID Proof */}
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">ID Proof (Aadhar/Passport) *</label>
-                  <div style={{
-                    padding: '0.75rem',
-                    background: 'var(--bg-hover)',
-                    border: '1px dashed var(--border-color)',
-                    borderRadius: 'var(--radius-sm)',
-                    textAlign: 'center'
-                  }}>
+                  <div className="tenant-upload-box">
                     <input
                       type="file"
                       id="id-proof-file-picker"
@@ -560,14 +557,17 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                       onChange={handleIdFileUpload}
                       accept=".pdf,.png,.jpg,.jpeg"
                     />
-                    <label htmlFor="id-proof-file-picker" style={{ cursor: 'pointer', display: 'block' }}>
-                      <Upload size={16} color="var(--accent-primary)" style={{ margin: '0 auto 0.25rem' }} />
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
+                    <label htmlFor="id-proof-file-picker" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                      <Upload size={18} color="var(--accent-primary)" style={{ marginBottom: '0.35rem' }} />
+                      <span style={{ fontSize: '0.775rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
                         Select File
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        PDF, PNG, or JPG
                       </span>
                     </label>
                     {idFilePreview && (
-                      <div style={{ marginTop: '0.375rem', background: 'var(--status-paid-bg)', padding: '2px 6px', borderRadius: 'var(--radius-xs)', fontSize: '0.7rem', color: 'var(--status-paid-text)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <div className="tenant-file-badge">
                         <CheckCircle2 size={11} /> {formData.idProofDocName || 'Uploaded'}
                       </div>
                     )}
@@ -577,13 +577,7 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                 {/* File Upload 2: Agreement PDF */}
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">Lease Agreement (PDF) *</label>
-                  <div style={{
-                    padding: '0.75rem',
-                    background: 'var(--bg-hover)',
-                    border: '1px dashed var(--border-color)',
-                    borderRadius: 'var(--radius-sm)',
-                    textAlign: 'center'
-                  }}>
+                  <div className="tenant-upload-box">
                     <input
                       type="file"
                       id="agreement-file-picker"
@@ -591,31 +585,22 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
                       onChange={handleAgreementFileUpload}
                       accept=".pdf,.png,.jpg"
                     />
-                    <label htmlFor="agreement-file-picker" style={{ cursor: 'pointer', display: 'block' }}>
-                      <FileText size={16} color="var(--accent-primary)" style={{ margin: '0 auto 0.25rem' }} />
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
-                        Select PDF
+                    <label htmlFor="agreement-file-picker" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                      <FileText size={18} color="var(--accent-primary)" style={{ marginBottom: '0.35rem' }} />
+                      <span style={{ fontSize: '0.775rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
+                        Select Agreement
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        PDF Document
                       </span>
                     </label>
                     {agreementFilePreview && (
-                      <div style={{ marginTop: '0.375rem', background: 'var(--status-paid-bg)', padding: '2px 6px', borderRadius: 'var(--radius-xs)', fontSize: '0.7rem', color: 'var(--status-paid-text)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <div className="tenant-file-badge">
                         <CheckCircle2 size={11} /> {formData.agreementPdfName || 'Uploaded'}
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
-
-              <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label" htmlFor="tenant-expiry-date">Lease Expiry Date *</label>
-                <input
-                  id="tenant-expiry-date"
-                  type="date"
-                  className="form-input tabular-nums"
-                  required
-                  value={formData.agreementExpiryDate}
-                  onChange={(e) => setFormData({ ...formData, agreementExpiryDate: e.target.value })}
-                />
               </div>
             </div>
           </div>

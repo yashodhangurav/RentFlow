@@ -374,14 +374,14 @@ export const Tenants = ({
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Tenant Profile</th>
-                <th>Unit</th>
-                <th>Phone Number</th>
-                <th>Aadhar / ID</th>
-                <th style={{ textAlign: 'right' }}>Monthly Rent</th>
-                <th>Status</th>
-                <th>Expiry</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th style={{ width: '22%' }}>Tenant Profile</th>
+                <th style={{ width: '10%' }}>Unit</th>
+                <th style={{ width: '14%' }}>Phone Number</th>
+                <th style={{ width: '12%' }}>Aadhar / ID</th>
+                <th style={{ textAlign: 'right', width: '13%' }}>Monthly Rent</th>
+                <th style={{ textAlign: 'center', width: '10%' }}>Status</th>
+                <th style={{ width: '10%' }}>Expiry</th>
+                <th style={{ textAlign: 'right', width: '9%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -399,8 +399,8 @@ export const Tenants = ({
                             width: '28px', 
                             height: '28px', 
                             borderRadius: 'var(--radius-sm)', 
-                            objectFit: 'cover',
-                            border: '1px solid var(--border-color)'
+                            objectFit: 'cover', 
+                            border: '1px solid var(--border-color)' 
                           }} 
                         />
                         <div>
@@ -433,7 +433,7 @@ export const Tenants = ({
                         {formatINR(tenant.rentAmount)}
                       </span>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'center' }}>
                       <span className={`badge ${isPending ? 'badge-warning' : 'badge-success'}`}>
                         {isPending ? 'Pending' : 'Paid'}
                       </span>

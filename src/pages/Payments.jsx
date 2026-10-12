@@ -202,12 +202,12 @@ export const Payments = ({
         <table className="custom-table">
           <thead>
             <tr>
-              <th>Unit</th>
-              <th>Tenant</th>
-              <th style={{ textAlign: 'right' }}>Monthly Rent</th>
-              <th>Status</th>
-              <th>Audit Verification Proofs</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
+              <th style={{ width: '12%' }}>Unit</th>
+              <th style={{ width: '22%' }}>Tenant</th>
+              <th style={{ textAlign: 'right', width: '14%' }}>Monthly Rent</th>
+              <th style={{ textAlign: 'center', width: '16%' }}>Status</th>
+              <th style={{ width: '22%' }}>Audit Verification Proofs</th>
+              <th style={{ textAlign: 'right', width: '14%' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -227,8 +227,8 @@ export const Payments = ({
                         width: '28px', 
                         height: '28px', 
                         borderRadius: 'var(--radius-sm)', 
-                        objectFit: 'cover',
-                        border: '1px solid var(--border-color)'
+                        objectFit: 'cover', 
+                        border: '1px solid var(--border-color)' 
                       }} 
                     />
                     <div>
@@ -242,7 +242,7 @@ export const Payments = ({
                     {formatINR(rentAmount)}
                   </span>
                 </td>
-                <td>
+                <td style={{ textAlign: 'center' }}>
                   <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`}>
                     {isPaid ? 'Paid' : isVerificationPending ? 'Verification Pending' : 'Pending'}
                   </span>
