@@ -1,6 +1,7 @@
 import React from 'react';
 import { downloadFile } from '../utils/downloadHelper';
 import { formatINR } from '../utils/formatters';
+import { formatDisplayDate } from '../utils/dateUtils';
 import { 
   ArrowLeft, 
   FileText, 
@@ -28,8 +29,9 @@ export const TenantDetailPage = ({
 
   // Calculate Agreement Expiry Countdown
   const today = new Date();
-  const expiryDate = new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31');
-  const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+  const rawExpiry = tenant.agreementExpiryDate || tenant.leaseEnd;
+  const expiryDate = rawExpiry ? new Date(rawExpiry) : null;
+  const daysUntilExpiry = expiryDate && !isNaN(expiryDate.getTime()) ? Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24)) : 365;
   const isExpired = daysUntilExpiry <= 0;
   const isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
@@ -209,13 +211,13 @@ export const TenantDetailPage = ({
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Commencement Date</span>
                 <span className="tabular-nums" style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-                  {new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}
+                  {formatDisplayDate(tenant.joiningDate || tenant.leaseStart) || 'Active'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.2rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Expiry Date</span>
                 <span className="tabular-nums" style={{ color: isExpiringSoon || isExpired ? 'var(--status-warning)' : 'var(--text-primary)', fontWeight: '500' }}>
-                  {new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}
+                  {formatDisplayDate(rawExpiry) || '1 Year Active'}
                 </span>
               </div>
             </div>

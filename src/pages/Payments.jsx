@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { formatINR } from '../utils/formatters';
+import { getCurrentMonthYear, getDynamicMonthOptions } from '../utils/dateUtils';
 import { 
   CreditCard, 
   DollarSign, 
@@ -19,7 +20,15 @@ export const Payments = ({
   onViewReceipt, 
   onOpenDocument 
 }) => {
-  const [selectedMonth, setSelectedMonth] = useState('August 2026');
+  const extraMonths = useMemo(() => {
+    return Array.from(new Set(payments.map(p => p.month || p.period).filter(Boolean)));
+  }, [payments]);
+
+  const monthOptions = useMemo(() => {
+    return getDynamicMonthOptions(6, 2, new Date(), extraMonths);
+  }, [extraMonths]);
+
+  const [selectedMonth, setSelectedMonth] = useState(() => getCurrentMonthYear());
   const [filterStatus, setFilterStatus] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -88,7 +97,7 @@ export const Payments = ({
           </p>
         </div>
 
-        {/* Month Selector */}
+        {/* Dynamic Month Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <label htmlFor="rent-month-selector" style={{ fontSize: '0.75rem', fontWeight: '500', color: 'var(--text-muted)' }}>
             Billing Period:
@@ -98,12 +107,13 @@ export const Payments = ({
             className="form-select"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            style={{ width: '160px', height: '36px', fontSize: '0.8125rem' }}
+            style={{ minWidth: '170px', height: '36px', fontSize: '0.8125rem' }}
           >
-            <option value="August 2026">August 2026</option>
-            <option value="July 2026">July 2026</option>
-            <option value="June 2026">June 2026</option>
-            <option value="September 2026">September 2026</option>
+            {monthOptions.map((m) => (
+              <option key={m} value={m}>
+                {m} {m === getCurrentMonthYear() ? '• Current' : ''}
+              </option>
+            ))}
           </select>
         </div>
       </div>

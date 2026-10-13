@@ -2,6 +2,7 @@ import React from 'react';
 import { StatsCard } from '../components/StatsCard';
 import { RevenueChart } from '../components/RevenueChart';
 import { formatINR } from '../utils/formatters';
+import { getShortMonthYear, getCurrentMonthYear } from '../utils/dateUtils';
 import { 
   Users, 
   DollarSign, 
@@ -20,6 +21,7 @@ import {
 
 export const Dashboard = ({ 
   tenants = [], 
+  properties = [], 
   payments = [], 
   maintenance = [], 
   onNavigate,
@@ -44,7 +46,7 @@ export const Dashboard = ({
     .reduce((acc, p) => acc + (p.amount || p.amountPaid || 0), 0);
 
   // 7-DAY AGREEMENT EXPIRY FILTER
-  const today = new Date('2026-08-02T00:00:00');
+  const today = new Date();
   const expiringWithin7Days = tenants.filter(t => {
     const expiry = new Date(t.agreementExpiryDate || t.leaseEnd);
     const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
@@ -60,7 +62,7 @@ export const Dashboard = ({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
             <span className="dashboard-status-indicator">
-              <span className="pulse-dot"></span> Active Term • Aug 2026
+              <span className="pulse-dot"></span> Active Term • {getShortMonthYear()}
             </span>
           </div>
           <h1 className="dashboard-title">
@@ -116,7 +118,7 @@ export const Dashboard = ({
           subtext={`${paidTenants.length} units settled`}
           icon={CheckCircle2}
           trend="up"
-          trendValue="Aug 2026"
+          trendValue={getShortMonthYear()}
         />
         <StatsCard
           title="Pending Dues"
@@ -213,7 +215,7 @@ export const Dashboard = ({
 
       {/* 2-Column Section: Revenue Trends + Urgent Alerts */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.15rem' }}>
-        <RevenueChart />
+        <RevenueChart payments={payments} tenants={tenants} properties={properties} />
 
         {/* Expiry Alerts Widget */}
         <div className="fintech-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>

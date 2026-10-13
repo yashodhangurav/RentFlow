@@ -1,3 +1,10 @@
+import { 
+  getCurrentMonthYear, 
+  toISODateString, 
+  addDaysISO, 
+  addMonthsISO 
+} from '../utils/dateUtils';
+
 export const INITIAL_PROPERTIES = [
   {
     id: "prop-1",
@@ -31,11 +38,9 @@ export const INITIAL_PROPERTIES = [
   }
 ];
 
-const getExpiryDateDays = (days) => {
-  const d = new Date('2026-08-02T00:00:00');
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
-};
+const currentMonth = getCurrentMonthYear();
+const todayISO = toISODateString();
+const getExpiryDateDays = (days) => addDaysISO(days);
 
 export const INITIAL_TENANTS = [
   {
@@ -81,8 +86,8 @@ export const INITIAL_TENANTS = [
     deposit: 28000,
     joiningDate: "2023-11-01",
     leaseStart: "2023-11-01",
-    leaseEnd: "2026-11-30",
-    agreementExpiryDate: "2026-11-30",
+    leaseEnd: addMonthsISO(4),
+    agreementExpiryDate: addMonthsISO(4),
     status: "Active",
     paymentStatus: "Pending",
     aadharId: "4567 8901 2345",
@@ -137,8 +142,8 @@ export const INITIAL_TENANTS = [
     deposit: 27000,
     joiningDate: "2024-05-01",
     leaseStart: "2024-05-01",
-    leaseEnd: "2027-04-30",
-    agreementExpiryDate: "2027-04-30",
+    leaseEnd: addMonthsISO(10),
+    agreementExpiryDate: addMonthsISO(10),
     status: "Active",
     paymentStatus: "Paid",
     aadharId: "6677 8899 0011",
@@ -191,15 +196,15 @@ export const INITIAL_PAYMENTS = [
     propertyName: "Sai Kripa Nivas",
     amount: 12000,
     amountPaid: 12000,
-    dueDate: "2026-08-01",
-    paidDate: "2026-08-01",
-    paymentDate: "2026-08-01",
+    dueDate: todayISO,
+    paidDate: todayISO,
+    paymentDate: todayISO,
     status: "paid",
     method: "UPI (Google Pay)",
     paymentMethod: "UPI (Google Pay)",
     reference: "UPI-984210",
-    period: "August 2026",
-    month: "August 2026"
+    period: currentMonth,
+    month: currentMonth
   },
   {
     id: "pay-1002",
@@ -211,15 +216,15 @@ export const INITIAL_PAYMENTS = [
     propertyName: "Sai Kripa Nivas",
     amount: 14000,
     amountPaid: 14000,
-    dueDate: "2026-08-01",
+    dueDate: todayISO,
     paidDate: null,
     paymentDate: null,
     status: "pending",
     method: "-",
     paymentMethod: "-",
     reference: "-",
-    period: "August 2026",
-    month: "August 2026"
+    period: currentMonth,
+    month: currentMonth
   },
   {
     id: "pay-1003",
@@ -231,15 +236,15 @@ export const INITIAL_PAYMENTS = [
     propertyName: "Sai Kripa Nivas",
     amount: 15500,
     amountPaid: 15500,
-    dueDate: "2026-08-01",
+    dueDate: todayISO,
     paidDate: null,
     paymentDate: null,
     status: "pending",
     method: "-",
     paymentMethod: "-",
     reference: "-",
-    period: "August 2026",
-    month: "August 2026"
+    period: currentMonth,
+    month: currentMonth
   },
   {
     id: "pay-1004",
@@ -251,15 +256,15 @@ export const INITIAL_PAYMENTS = [
     propertyName: "Sai Kripa Nivas",
     amount: 13500,
     amountPaid: 13500,
-    dueDate: "2026-08-01",
-    paidDate: "2026-08-01",
-    paymentDate: "2026-08-01",
+    dueDate: todayISO,
+    paidDate: todayISO,
+    paymentDate: todayISO,
     status: "paid",
     method: "NetBanking (HDFC)",
     paymentMethod: "NetBanking (HDFC)",
     reference: "NB-448102",
-    period: "August 2026",
-    month: "August 2026"
+    period: currentMonth,
+    month: currentMonth
   },
   {
     id: "pay-1005",
@@ -271,15 +276,15 @@ export const INITIAL_PAYMENTS = [
     propertyName: "Sai Kripa Nivas",
     amount: 16000,
     amountPaid: 16000,
-    dueDate: "2026-08-01",
-    paidDate: "2026-07-30",
-    paymentDate: "2026-07-30",
+    dueDate: todayISO,
+    paidDate: todayISO,
+    paymentDate: todayISO,
     status: "paid",
     method: "UPI (PhonePe)",
     paymentMethod: "UPI (PhonePe)",
     reference: "UPI-110293",
-    period: "August 2026",
-    month: "August 2026"
+    period: currentMonth,
+    month: currentMonth
   }
 ];
 
@@ -295,17 +300,28 @@ export const INITIAL_MAINTENANCE = [
     priority: "High",
     status: "In Progress",
     assignedVendor: "Local Plumber - Rajesh Kumar",
-    dateReported: "2026-08-01",
+    dateReported: todayISO,
     costEstimate: 850,
     description: "Geyser water inlet dripping slowly."
   }
 ];
 
-export const MONTHLY_REVENUE_DATA = [
-  { month: "Mar", collected: 68000, target: 71000, occupancy: 90 },
-  { month: "Apr", collected: 71000, target: 71000, occupancy: 95 },
-  { month: "May", collected: 71000, target: 71000, occupancy: 95 },
-  { month: "Jun", collected: 71000, target: 71000, occupancy: 95 },
-  { month: "Jul", collected: 71000, target: 71000, occupancy: 95 },
-  { month: "Aug", collected: 41500, target: 71000, occupancy: 95 }
-];
+export const generateMonthlyRevenueData = () => {
+  const result = [];
+  const base = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+    const mStr = d.toLocaleDateString('en-US', { month: 'short' });
+    const isCurrent = i === 0;
+    result.push({
+      month: mStr,
+      year: d.getFullYear(),
+      collected: isCurrent ? 41500 : 71000,
+      target: 71000,
+      occupancy: 95
+    });
+  }
+  return result;
+};
+
+export const MONTHLY_REVENUE_DATA = generateMonthlyRevenueData();

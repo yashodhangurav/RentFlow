@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../api/index';
+import { addMonthsISO } from '../utils/dateUtils';
 import { X, UserPlus, Building, Mail, FileText, Upload, CheckCircle2, Cloud, Camera, Key, Lock, RefreshCw, User, CreditCard } from 'lucide-react';
 
 export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantToEdit }) => {
@@ -15,7 +16,7 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
     propertyName: defaultProperty.name,
     aadharId: '',
     joiningDate: new Date().toISOString().split('T')[0],
-    agreementExpiryDate: '2026-08-15',
+    agreementExpiryDate: addMonthsISO(11),
     rentAmount: 12000,
     deposit: 24000,
     emergencyContact: '',
@@ -55,7 +56,7 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
         roomNo: tenantToEdit.roomNo || tenantToEdit.roomNumber || tenantToEdit.unit || '',
         aadharId: tenantToEdit.aadharId || '',
         joiningDate: tenantToEdit.joiningDate || tenantToEdit.leaseStart || new Date().toISOString().split('T')[0],
-        agreementExpiryDate: tenantToEdit.agreementExpiryDate || tenantToEdit.leaseEnd || '2026-08-15',
+        agreementExpiryDate: tenantToEdit.agreementExpiryDate || tenantToEdit.leaseEnd || addMonthsISO(11),
         rentAmount: tenantToEdit.rentAmount || 12000,
         deposit: tenantToEdit.deposit || tenantToEdit.rentAmount * 2 || 24000,
         idProofDocName: tenantToEdit.idProofDoc || tenantToEdit.idProof || 'Aadhar_Card.pdf',
@@ -81,7 +82,7 @@ export const TenantModal = ({ isOpen, onClose, onSave, properties = [], tenantTo
         propertyName: defaultProperty.name,
         aadharId: '',
         joiningDate: new Date().toISOString().split('T')[0],
-        agreementExpiryDate: '2026-08-15',
+        agreementExpiryDate: addMonthsISO(11),
         rentAmount: 12000,
         deposit: 24000,
         emergencyContact: '',

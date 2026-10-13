@@ -13,6 +13,11 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://guravyashodhan_db_user:Yashu%40123@cluster0.rpxc1ds.mongodb.net/tenant_management_db?retryWrites=true&w=majority&appName=Cluster0';
 
+const now = new Date();
+const addDays = (days) => new Date(now.getTime() + Number(days) * 86400000);
+const addMonths = (m) => new Date(new Date(now).setMonth(now.getMonth() + Number(m)));
+const currentMonthStr = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
 const initialTenants = [
   {
     name: "Rahul Sharma",
@@ -22,7 +27,7 @@ const initialTenants = [
     joiningDate: new Date("2024-03-15"),
     idProof: "Rahul_Sharma_Aadhar_Card.pdf",
     agreementFile: "Agreement_Room101_Rahul.pdf",
-    agreementExpiryDate: new Date("2026-08-10"),
+    agreementExpiryDate: addDays(4),
     status: "Expiring Soon",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
   },
@@ -34,7 +39,7 @@ const initialTenants = [
     joiningDate: new Date("2023-11-01"),
     idProof: "Priya_Patel_Passport_ID.pdf",
     agreementFile: "Agreement_Room102_Priya.pdf",
-    agreementExpiryDate: new Date("2026-11-30"),
+    agreementExpiryDate: addMonths(4),
     status: "Active",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
   },
@@ -46,7 +51,7 @@ const initialTenants = [
     joiningDate: new Date("2024-01-10"),
     idProof: "Amit_Verma_Voter_ID.pdf",
     agreementFile: "Agreement_Room201_Amit.pdf",
-    agreementExpiryDate: new Date("2026-08-06"),
+    agreementExpiryDate: addDays(2),
     status: "Expiring Soon",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
   },
@@ -58,7 +63,7 @@ const initialTenants = [
     joiningDate: new Date("2024-05-01"),
     idProof: "Sneha_Reddy_Aadhar.pdf",
     agreementFile: "Agreement_Room202_Sneha.pdf",
-    agreementExpiryDate: new Date("2027-04-30"),
+    agreementExpiryDate: addMonths(10),
     status: "Active",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
   },
@@ -70,7 +75,7 @@ const initialTenants = [
     joiningDate: new Date("2023-08-15"),
     idProof: "Vikram_Malhotra_DrivingLicense.pdf",
     agreementFile: "Agreement_Room301_Vikram.pdf",
-    agreementExpiryDate: new Date("2026-08-14"),
+    agreementExpiryDate: addDays(6),
     status: "Expiring Soon",
     avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80"
   }
@@ -133,9 +138,9 @@ export const seedDatabase = async () => {
         tenantId: insertedTenants[0]._id,
         tenantName: insertedTenants[0].name,
         roomNumber: insertedTenants[0].roomNumber,
-        month: "August 2026",
+        month: currentMonthStr,
         amountPaid: insertedTenants[0].rentAmount,
-        paymentDate: new Date("2026-08-01"),
+        paymentDate: now,
         status: "paid",
         paymentMethod: "UPI (Google Pay)",
         reference: "UPI-984210"
@@ -144,9 +149,9 @@ export const seedDatabase = async () => {
         tenantId: insertedTenants[1]._id,
         tenantName: insertedTenants[1].name,
         roomNumber: insertedTenants[1].roomNumber,
-        month: "August 2026",
+        month: currentMonthStr,
         amountPaid: insertedTenants[1].rentAmount,
-        paymentDate: new Date("2026-08-01"),
+        paymentDate: null,
         status: "pending",
         paymentMethod: "-",
         reference: "-"
@@ -155,9 +160,9 @@ export const seedDatabase = async () => {
         tenantId: insertedTenants[2]._id,
         tenantName: insertedTenants[2].name,
         roomNumber: insertedTenants[2].roomNumber,
-        month: "August 2026",
+        month: currentMonthStr,
         amountPaid: insertedTenants[2].rentAmount,
-        paymentDate: new Date("2026-08-01"),
+        paymentDate: null,
         status: "pending",
         paymentMethod: "-",
         reference: "-"
@@ -166,9 +171,9 @@ export const seedDatabase = async () => {
         tenantId: insertedTenants[3]._id,
         tenantName: insertedTenants[3].name,
         roomNumber: insertedTenants[3].roomNumber,
-        month: "August 2026",
+        month: currentMonthStr,
         amountPaid: insertedTenants[3].rentAmount,
-        paymentDate: new Date("2026-08-01"),
+        paymentDate: now,
         status: "paid",
         paymentMethod: "NetBanking",
         reference: "NB-448102"
@@ -177,9 +182,9 @@ export const seedDatabase = async () => {
         tenantId: insertedTenants[4]._id,
         tenantName: insertedTenants[4].name,
         roomNumber: insertedTenants[4].roomNumber,
-        month: "August 2026",
+        month: currentMonthStr,
         amountPaid: insertedTenants[4].rentAmount,
-        paymentDate: new Date("2026-07-30"),
+        paymentDate: now,
         status: "paid",
         paymentMethod: "UPI (PhonePe)",
         reference: "UPI-110293"

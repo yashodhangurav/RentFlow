@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard, DollarSign, Calendar, CheckCircle2 } from 'lucide-react';
+import { getCurrentMonthYear, getDynamicMonthOptions } from '../utils/dateUtils';
 
 export const PaymentModal = ({ isOpen, onClose, onSave, tenants = [], preselectedTenant = null }) => {
   const [tenantId, setTenantId] = useState('');
   const [amount, setAmount] = useState(2450);
   const [method, setMethod] = useState('Bank Transfer (ACH)');
-  const [period, setPeriod] = useState('August 2026');
+  const [period, setPeriod] = useState(() => getCurrentMonthYear());
   const [reference, setReference] = useState('');
   const [paidDate, setPaidDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -123,15 +124,19 @@ export const PaymentModal = ({ isOpen, onClose, onSave, tenants = [], preselecte
 
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" htmlFor="payment-period">Billing Period *</label>
-                <input
+                <select
                   id="payment-period"
-                  type="text"
-                  className="form-input"
+                  className="form-select"
                   required
-                  placeholder="e.g. August 2026"
                   value={period}
                   onChange={(e) => setPeriod(e.target.value)}
-                />
+                >
+                  {getDynamicMonthOptions(6, 2).map((m) => (
+                    <option key={m} value={m}>
+                      {m} {m === getCurrentMonthYear() ? '• Current' : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { formatINR } from '../utils/formatters';
+import { getCurrentMonthYear, getDynamicMonthOptions, formatDisplayDate } from '../utils/dateUtils';
 import { apiService } from '../api/index';
 import { 
   Home, 
@@ -26,7 +27,15 @@ export const TenantPortal = ({
   
   const myTenant = tenants.find(t => t.id === user?.tenantId || t._id === user?.tenantId || t.name === user?.name) || tenants[0];
   
-  const [selectedMonth, setSelectedMonth] = useState('August 2026');
+  const extraMonths = useMemo(() => {
+    return Array.from(new Set(payments.map(p => p.month || p.period).filter(Boolean)));
+  }, [payments]);
+
+  const monthOptions = useMemo(() => {
+    return getDynamicMonthOptions(6, 1, new Date(), extraMonths);
+  }, [extraMonths]);
+
+  const [selectedMonth, setSelectedMonth] = useState(() => getCurrentMonthYear());
   
   // Rent Proof & Electricity Bill Proof
   const [rentRef, setRentRef] = useState('');
@@ -52,7 +61,7 @@ export const TenantPortal = ({
   const isPaid = (currentMonthPayment && (currentMonthPayment.status === 'paid' || currentMonthPayment.status === 'Paid')) || myTenant?.paymentStatus === 'Paid';
   const isVerificationPending = currentMonthPayment?.status === 'verification_pending';
 
-  const today = new Date('2026-08-02T00:00:00');
+  const today = new Date();
   const currentDay = today.getDate();
   const deadlineDay = 10;
   const daysLeftToDeadline = Math.max(0, deadlineDay - currentDay);
@@ -124,8 +133,8 @@ export const TenantPortal = ({
     }, 400);
   };
 
-  const expiryDate = new Date(myTenant?.agreementExpiryDate || myTenant?.leaseEnd || '2026-12-31');
-  const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+  const expiryDate = myTenant?.agreementExpiryDate || myTenant?.leaseEnd;
+  const daysUntilExpiry = expiryDate ? Math.ceil((new Date(expiryDate) - today) / (1000 * 60 * 60 * 24)) : 365;
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.5rem 1rem' }}>
@@ -253,7 +262,7 @@ export const TenantPortal = ({
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.2rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Agreement Expiry</span>
                 <span className="tabular-nums" style={{ color: daysUntilExpiry <= 7 ? 'var(--status-warning)' : 'var(--text-primary)', fontWeight: '500' }}>
-                  {new Date(myTenant?.agreementExpiryDate || myTenant?.leaseEnd || '2026-12-31').toLocaleDateString()}
+                  {formatDisplayDate(expiryDate) || 'Active'}
                 </span>
               </div>
             </div>
@@ -279,14 +288,34 @@ export const TenantPortal = ({
 
         {/* Card 2: MONTHLY RENT & ELECTRICITY BILL PROOF SUBMISSION */}
         <div className="fintech-card" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0 }}>
-              Submit Payment Proof
-            </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: '600', margin: 0 }}>
+                Submit Payment Proof
+              </h3>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+                Billing Period: <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{selectedMonth}</span>
+              </p>
+            </div>
 
-            <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`}>
-              {isPaid ? 'Verified' : isVerificationPending ? 'Audit Pending' : 'Action Required'}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <select
+                className="form-select"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{ height: '30px', fontSize: '0.75rem', padding: '0 0.5rem' }}
+                aria-label="Billing Month"
+              >
+                {monthOptions.map((m) => (
+                  <option key={m} value={m}>
+                    {m} {m === getCurrentMonthYear() ? '• Current' : ''}
+                  </option>
+                ))}
+              </select>
+              <span className={`badge ${isPaid ? 'badge-success' : isVerificationPending ? 'badge-warning' : 'badge-danger'}`}>
+                {isPaid ? 'Verified' : isVerificationPending ? 'Audit Pending' : 'Action Required'}
+              </span>
+            </div>
           </div>
 
           {uploadingCloud && (
@@ -351,14 +380,27 @@ export const TenantPortal = ({
                   </label>
                 </div>
 
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="UPI / Transaction Ref ID"
-                  value={rentRef}
-                  onChange={(e) => setRentRef(e.target.value)}
-                  style={{ fontSize: '0.75rem', height: '30px' }}
-                />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginTop: '0.4rem' }}>
+                  <select
+                    className="form-select"
+                    value={rentMethod}
+                    onChange={(e) => setRentMethod(e.target.value)}
+                    style={{ fontSize: '0.75rem', height: '30px' }}
+                    aria-label="Payment Method"
+                  >
+                    <option value="UPI (Google Pay / PhonePe)">UPI (GPay/PhonePe)</option>
+                    <option value="NetBanking (IMPS/NEFT)">NetBanking</option>
+                    <option value="Cash / Handover">Cash</option>
+                  </select>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="UPI / Ref ID"
+                    value={rentRef}
+                    onChange={(e) => setRentRef(e.target.value)}
+                    style={{ fontSize: '0.75rem', height: '30px' }}
+                  />
+                </div>
               </div>
 
               {/* Step 2: Electricity / Current Bill Payment Proof */}

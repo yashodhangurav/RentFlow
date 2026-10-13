@@ -124,6 +124,18 @@ export const apiService = {
     }
   },
 
+  // Fetch Revenue Trends Analytics from MongoDB Atlas
+  async getRevenueAnalytics() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/payments/analytics/revenue-trends`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.success ? data.data : null;
+    } catch (err) {
+      return null;
+    }
+  },
+
   // Properties API (MongoDB Atlas)
   async getProperties() {
     try {

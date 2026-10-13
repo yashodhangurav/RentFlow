@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { formatINR } from '../utils/formatters';
+import { isExpiringWithinDays, formatDisplayDate } from '../utils/dateUtils';
 import { 
   Users, 
   Search, 
@@ -67,10 +68,7 @@ export const Tenants = ({
       if (statusFilter === 'PAID') return tenant.paymentStatus === 'Paid';
       if (statusFilter === 'PENDING') return tenant.paymentStatus !== 'Paid';
       if (statusFilter === 'EXPIRING') {
-        const today = new Date('2026-08-02T00:00:00');
-        const expiry = new Date(tenant.agreementExpiryDate || tenant.leaseEnd);
-        const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-        return diffDays <= 7 && diffDays >= 0;
+        return isExpiringWithinDays(tenant.agreementExpiryDate || tenant.leaseEnd, 7);
       }
 
       return true;
@@ -283,8 +281,8 @@ export const Tenants = ({
                       </code>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                      <span>Lease: <span className="tabular-nums">{new Date(tenant.joiningDate || tenant.leaseStart || '2024-01-01').toLocaleDateString()}</span></span>
-                      <span>Expiry: <span className="tabular-nums">{new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}</span></span>
+                      <span>Lease: <span className="tabular-nums">{formatDisplayDate(tenant.joiningDate || tenant.leaseStart) || 'Active'}</span></span>
+                      <span>Expiry: <span className="tabular-nums">{formatDisplayDate(tenant.agreementExpiryDate || tenant.leaseEnd) || '1 Year'}</span></span>
                     </div>
                   </div>
 
@@ -440,7 +438,7 @@ export const Tenants = ({
                     </td>
                     <td>
                       <span className="tabular-nums" style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
-                        {new Date(tenant.agreementExpiryDate || tenant.leaseEnd || '2026-12-31').toLocaleDateString()}
+                        {formatDisplayDate(tenant.agreementExpiryDate || tenant.leaseEnd) || 'Active'}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>

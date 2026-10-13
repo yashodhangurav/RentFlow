@@ -22,6 +22,7 @@ import { ReceiptModal } from './components/ReceiptModal';
 import { DocumentModal } from './components/DocumentModal';
 
 import { apiService } from './api/index';
+import { getCurrentMonthYear } from './utils/dateUtils';
 
 import { 
   INITIAL_PROPERTIES, 
@@ -31,7 +32,7 @@ import {
 } from './mock/initialData';
 
 const MainAppContent = () => {
-  const { isAuthenticated, isAdmin, isTenant, user } = useAuth();
+  const { isAuthenticated, isAdmin, isTenant } = useAuth();
   
   // Theme State
   const [theme, setTheme] = useState(() => localStorage.getItem('estatepulse_theme') || 'dark');
@@ -411,7 +412,7 @@ const MainAppContent = () => {
       tenantId: paymentData.tenantId,
       tenantName: paymentData.tenantName,
       roomNumber: paymentData.unit || paymentData.roomNo,
-      month: paymentData.period || 'August 2026',
+      month: paymentData.period || getCurrentMonthYear(),
       amountPaid: paymentData.amount,
       paymentDate: paymentData.paidDate,
       status: 'paid',
@@ -498,11 +499,15 @@ const MainAppContent = () => {
           onOpenDocument={handleOpenDocument}
         />
 
-        <ReceiptModal
-          isOpen={isReceiptModalOpen}
-          onClose={() => setIsReceiptModalOpen(false)}
-          payment={receiptPayment}
-        />
+        {isReceiptModalOpen && receiptPayment && (
+          <ReceiptModal
+            isOpen={isReceiptModalOpen}
+            onClose={() => setIsReceiptModalOpen(false)}
+            payment={receiptPayment}
+            tenants={tenants}
+            properties={properties}
+          />
+        )}
 
         <DocumentModal
           isOpen={isDocModalOpen}
@@ -522,7 +527,7 @@ const MainAppContent = () => {
 
   // IF LOGGED IN AS OWNER
   const pendingRentTenants = tenants.filter(t => t.paymentStatus !== 'Paid');
-  const today = new Date('2026-08-02T00:00:00');
+  const today = new Date();
   
   const expiringWithin7Days = tenants.filter(t => {
     const expiry = new Date(t.agreementExpiryDate || t.leaseEnd);
@@ -742,11 +747,15 @@ const MainAppContent = () => {
         ticketToEdit={maintTicketToEdit}
       />
 
-      <ReceiptModal
-        isOpen={isReceiptModalOpen}
-        onClose={() => setIsReceiptModalOpen(false)}
-        payment={receiptPayment}
-      />
+      {isReceiptModalOpen && receiptPayment && (
+        <ReceiptModal
+          isOpen={isReceiptModalOpen}
+          onClose={() => setIsReceiptModalOpen(false)}
+          payment={receiptPayment}
+          tenants={tenants}
+          properties={properties}
+        />
+      )}
 
       <DocumentModal
         isOpen={isDocModalOpen}
