@@ -13,7 +13,8 @@ import {
   LogOut, 
   History,
   Zap,
-  Building2
+  Building2,
+  Globe
 } from 'lucide-react';
 
 export const TenantPortal = ({ 
@@ -21,7 +22,8 @@ export const TenantPortal = ({
   payments = [], 
   onSubmitPaymentProof, 
   onViewReceipt,
-  onOpenDocument 
+  onOpenDocument,
+  onViewPublicHome
 }) => {
   const { user, logout } = useAuth();
   
@@ -58,8 +60,11 @@ export const TenantPortal = ({
   const currentMonthPayment = myPayments.find(p => p.month === selectedMonth || p.period === selectedMonth);
   const roomName = myTenant?.roomNo || myTenant?.roomNumber || myTenant?.unit || 'Room 101';
 
-  const isPaid = (currentMonthPayment && (currentMonthPayment.status === 'paid' || currentMonthPayment.status === 'Paid')) || myTenant?.paymentStatus === 'Paid';
   const isVerificationPending = currentMonthPayment?.status === 'verification_pending';
+  const isPaid = !isVerificationPending && (
+    (currentMonthPayment && (currentMonthPayment.status === 'paid' || currentMonthPayment.status === 'Paid')) ||
+    (!currentMonthPayment && myTenant?.paymentStatus === 'Paid')
+  );
 
   const today = new Date();
   const currentDay = today.getDate();
@@ -191,9 +196,22 @@ export const TenantPortal = ({
           </div>
         </div>
 
-        <button onClick={logout} className="btn btn-secondary btn-sm" id="tenant-logout-btn">
-          <LogOut size={13} /> Sign Out
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {onViewPublicHome && (
+            <button 
+              type="button" 
+              onClick={onViewPublicHome} 
+              className="btn btn-secondary btn-sm" 
+              id="tenant-view-public-home-btn"
+              style={{ gap: '0.35rem', fontSize: '0.75rem' }}
+            >
+              <Globe size={13} color="var(--accent-primary)" /> Public Site
+            </button>
+          )}
+          <button onClick={logout} className="btn btn-secondary btn-sm" id="tenant-logout-btn">
+            <LogOut size={13} /> Sign Out
+          </button>
+        </div>
       </div>
 
       {/* MONTHLY DEADLINE ALERT BANNER */}

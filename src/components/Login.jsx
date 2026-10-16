@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { INITIAL_TENANTS } from '../mock/initialData';
-import { Building2, Lock, Mail, User, ShieldCheck, ArrowRight, CheckCircle2, Home, Key } from 'lucide-react';
+import { Building2, Lock, Mail, User, ShieldCheck, ArrowRight, ArrowLeft, CheckCircle2, Home, Key } from 'lucide-react';
 
-export const Login = ({ tenants = INITIAL_TENANTS }) => {
+export const Login = ({ tenants = INITIAL_TENANTS, initialRole = 'admin', onBackToHome }) => {
   const { loginAdmin, loginTenant } = useAuth();
-  const [portalType, setPortalType] = useState('admin');
+  const [portalType, setPortalType] = useState(initialRole);
+  
+  React.useEffect(() => {
+    if (initialRole) {
+      setPortalType(initialRole);
+    }
+  }, [initialRole]);
   
   // Admin form state
   const [adminEmail, setAdminEmail] = useState('admin@estatepulse.com');
@@ -78,6 +84,20 @@ export const Login = ({ tenants = INITIAL_TENANTS }) => {
         border: '1px solid var(--border-color)',
         boxShadow: 'var(--shadow-xl)'
       }}>
+        {/* Optional Back to Home Navigation */}
+        {onBackToHome && (
+          <div style={{ marginBottom: '1.25rem' }}>
+            <button
+              type="button"
+              onClick={onBackToHome}
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.75rem', gap: '0.4rem', padding: '0.35rem 0.75rem' }}
+            >
+              <ArrowLeft size={13} /> Back to Home Page
+            </button>
+          </div>
+        )}
+
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <div style={{

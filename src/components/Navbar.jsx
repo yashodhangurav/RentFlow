@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bell, Sun, Moon, CheckCircle, X, FileText, ShieldAlert, Menu, Building2 } from 'lucide-react';
+import { Search, Bell, Sun, Moon, CheckCircle, X, FileText, ShieldAlert, Menu, Building2, Globe } from 'lucide-react';
 
 export const Navbar = ({ 
   activeTab, 
@@ -8,7 +8,8 @@ export const Navbar = ({
   theme, 
   setTheme,
   urgentAlerts = [],
-  onToggleMobileMenu
+  onToggleMobileMenu,
+  onViewPublicHome
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -138,6 +139,21 @@ export const Navbar = ({
 
       {/* Right Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+        {/* Public Website Landing Page Link */}
+        {onViewPublicHome && (
+          <button
+            type="button"
+            onClick={onViewPublicHome}
+            className="btn btn-secondary btn-sm"
+            id="nav-view-public-home"
+            title="Preview Public Website & Landing Page"
+            style={{ gap: '0.35rem', fontSize: '0.75rem', height: '32px', padding: '0 0.65rem' }}
+          >
+            <Globe size={14} color="var(--accent-primary)" />
+            <span className="hide-mobile">Public Site</span>
+          </button>
+        )}
+
         {/* Dark/Light Theme Toggle */}
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

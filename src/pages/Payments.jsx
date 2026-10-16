@@ -39,8 +39,11 @@ export const Payments = ({
       (p.month === selectedMonth || p.period === selectedMonth)
     );
 
-    const isPaid = (payment && (payment.status === 'paid' || payment.status === 'Paid')) || t.paymentStatus === 'Paid';
     const isVerificationPending = payment?.status === 'verification_pending';
+    const isPaid = !isVerificationPending && (
+      (payment && (payment.status === 'paid' || payment.status === 'Paid')) || 
+      (!payment && t.paymentStatus === 'Paid')
+    );
 
     return {
       tenant: t,

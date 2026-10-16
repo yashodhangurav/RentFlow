@@ -119,7 +119,22 @@ export const apiService = {
       });
       const data = await res.json();
       return data.success ? data.data : null;
-    } catch (err) {
+    } catch {
+      return null;
+    }
+  },
+
+  // Update Rent Payment Record in MongoDB Atlas (Verification / Status Changes)
+  async updatePayment(id, paymentData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/payments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paymentData)
+      });
+      const data = await res.json();
+      return data.success ? data.data : null;
+    } catch {
       return null;
     }
   },

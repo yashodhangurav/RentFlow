@@ -29,7 +29,7 @@ const rentPaymentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['paid', 'pending'],
+    enum: ['paid', 'pending', 'verification_pending', 'rejected', 'Paid', 'Pending', 'Verification Pending', 'Rejected'],
     default: 'pending'
   },
   paymentMethod: {
@@ -39,6 +39,27 @@ const rentPaymentSchema = new mongoose.Schema({
   reference: {
     type: String,
     default: () => `REF-${Math.floor(100000 + Math.random() * 900000)}`
+  },
+  proofFile: {
+    type: String,
+    default: ''
+  },
+  electricityAmount: {
+    type: Number,
+    default: 0,
+    min: [0, 'Electricity amount must be non-negative']
+  },
+  electricityRef: {
+    type: String,
+    default: ''
+  },
+  electricityProofFile: {
+    type: String,
+    default: ''
+  },
+  propertyName: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

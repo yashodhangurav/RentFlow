@@ -9,6 +9,7 @@ import {
   FileSpreadsheet, 
   LogOut, 
   ChevronRight,
+  Globe,
   X
 } from 'lucide-react';
 
@@ -18,7 +19,8 @@ export const Sidebar = ({
   pendingRentCount = 0, 
   openMaintenanceCount = 0,
   isOpen = false,
-  onClose
+  onClose,
+  onViewPublicHome
 }) => {
   const { user, logout } = useAuth();
 
@@ -154,6 +156,20 @@ export const Sidebar = ({
                 </button>
               );
             })}
+
+            {onViewPublicHome && (
+              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
+                <button
+                  type="button"
+                  onClick={onViewPublicHome}
+                  className="sidebar-nav-item"
+                  style={{ color: 'var(--accent-primary)', fontWeight: 600 }}
+                >
+                  <Globe size={16} />
+                  <span>Public Website</span>
+                </button>
+              </div>
+            )}
           </nav>
         </div>
 

@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { RentPayment } from '../models/RentPayment.js';
 import { Tenant } from '../models/Tenant.js';
 
@@ -49,7 +50,7 @@ router.get('/analytics/revenue-trends', async (req, res) => {
         .reduce((acc, p) => acc + (Number(p.amountPaid) || 0), 0);
 
       const pending = monthPayments
-        .filter(p => p.status === 'pending' || p.status === 'Pending')
+        .filter(p => p.status === 'pending' || p.status === 'Pending' || p.status === 'verification_pending')
         .reduce((acc, p) => acc + (Number(p.amountPaid) || 0), 0);
 
       const isCurrentMonth = i === 0;
@@ -82,24 +83,80 @@ router.get('/analytics/revenue-trends', async (req, res) => {
   }
 });
 
-// POST /api/payments - Record new rent payment
+// POST /api/payments - Record new rent payment or submit payment proof
 router.post('/', async (req, res) => {
   try {
-    const { tenantId, month, amountPaid, paymentDate, status, paymentMethod, reference } = req.body;
+    const { 
+      tenantId, 
+      month, 
+      amountPaid, 
+      paymentDate, 
+      status, 
+      paymentMethod, 
+      reference,
+      proofFile,
+      electricityAmount,
+      electricityRef,
+      electricityProofFile,
+      propertyName,
+      roomNumber,
+      tenantName
+    } = req.body;
     
-    // Find tenant details to populate name & roomNumber
-    const tenant = await Tenant.findById(tenantId);
+    // Find tenant details to populate name & roomNumber if not provided
+    let tenant = null;
+    if (tenantId && mongoose.Types.ObjectId.isValid(tenantId)) {
+      tenant = await Tenant.findById(tenantId);
+    }
     
+    const validTenantId = tenant ? tenant._id : (mongoose.Types.ObjectId.isValid(tenantId) ? tenantId : new mongoose.Types.ObjectId());
+    const finalMonth = month || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const finalStatus = status || 'pending';
+
+    // Check if an existing payment record exists for this tenant & month
+    let existingPayment = null;
+    if (tenantId) {
+      existingPayment = await RentPayment.findOne({
+        $or: [
+          { tenantId: validTenantId, month: finalMonth },
+          ...(tenant ? [{ tenantName: tenant.name, month: finalMonth }] : [])
+        ]
+      });
+    }
+
+    if (existingPayment) {
+      if (amountPaid !== undefined) existingPayment.amountPaid = Number(amountPaid) || existingPayment.amountPaid;
+      if (paymentDate) existingPayment.paymentDate = paymentDate;
+      existingPayment.status = finalStatus;
+      if (paymentMethod) existingPayment.paymentMethod = paymentMethod;
+      if (reference) existingPayment.reference = reference;
+      if (proofFile) existingPayment.proofFile = proofFile;
+      if (electricityAmount !== undefined) existingPayment.electricityAmount = Number(electricityAmount) || 0;
+      if (electricityRef) existingPayment.electricityRef = electricityRef;
+      if (electricityProofFile) existingPayment.electricityProofFile = electricityProofFile;
+      if (propertyName || (tenant && tenant.propertyName)) {
+        existingPayment.propertyName = propertyName || tenant?.propertyName || existingPayment.propertyName;
+      }
+
+      const updatedPayment = await existingPayment.save();
+      return res.status(200).json({ success: true, data: updatedPayment });
+    }
+
     const newPayment = new RentPayment({
-      tenantId,
-      tenantName: tenant ? tenant.name : req.body.tenantName || 'Resident',
-      roomNumber: tenant ? tenant.roomNumber : req.body.roomNumber || 'Room',
-      month: month || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-      amountPaid,
+      tenantId: validTenantId,
+      tenantName: tenantName || (tenant ? tenant.name : 'Resident'),
+      roomNumber: roomNumber || (tenant ? tenant.roomNumber : 'Room'),
+      propertyName: propertyName || (tenant ? tenant.propertyName : ''),
+      month: finalMonth,
+      amountPaid: Number(amountPaid) || (tenant ? tenant.rentAmount : 0),
       paymentDate: paymentDate || Date.now(),
-      status: status || 'paid',
-      paymentMethod: paymentMethod || 'UPI',
-      reference: reference || `REF-${Math.floor(100000 + Math.random() * 900000)}`
+      status: finalStatus,
+      paymentMethod: paymentMethod || 'UPI (GPay / PhonePe)',
+      reference: reference || `REF-${Math.floor(100000 + Math.random() * 900000)}`,
+      proofFile: proofFile || '',
+      electricityAmount: Number(electricityAmount) || 0,
+      electricityRef: electricityRef || '',
+      electricityProofFile: electricityProofFile || ''
     });
 
     const savedPayment = await newPayment.save();
@@ -109,13 +166,23 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/payments/:id - Update payment status
+// PUT /api/payments/:id - Update payment record / approve verification
 router.put('/:id', async (req, res) => {
   try {
-    const updated = await RentPayment.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await RentPayment.findByIdAndUpdate(
+      req.params.id, 
+      req.body, 
+      { new: true, runValidators: true }
+    );
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Payment record not found' });
     }
+
+    // If payment was verified/paid, update tenant paymentStatus if tenantId exists
+    if ((req.body.status === 'paid' || req.body.status === 'Paid') && updated.tenantId) {
+      await Tenant.findByIdAndUpdate(updated.tenantId, { paymentStatus: 'Paid' }).catch(() => {});
+    }
+
     res.json({ success: true, data: updated });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });

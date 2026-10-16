@@ -13,6 +13,7 @@ import { Maintenance } from './pages/Maintenance';
 import { Reports } from './pages/Reports';
 import { TenantDetailPage } from './pages/TenantDetailPage';
 import { TenantPortal } from './pages/TenantPortal';
+import { HomePage } from './pages/HomePage';
 
 import { TenantModal } from './components/TenantModal';
 import { TenantDetailsDrawer } from './components/TenantDetailsDrawer';
@@ -32,15 +33,28 @@ import {
 } from './mock/initialData';
 
 const MainAppContent = () => {
-  const { isAuthenticated, isAdmin, isTenant } = useAuth();
+  const { isAuthenticated, isAdmin, isTenant, loginAdmin, loginTenant } = useAuth();
   
   // Theme State
   const [theme, setTheme] = useState(() => localStorage.getItem('estatepulse_theme') || 'dark');
+
+  // Public Landing vs Login state for non-authenticated visitors
+  const [guestView, setGuestView] = useState('home'); // 'home' | 'login'
+  const [loginRole, setLoginRole] = useState('admin');
+  const [viewPublicHome, setViewPublicHome] = useState(false);
 
   // Tab & Search State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Reset public home preview when auth state changes
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setViewPublicHome(false);
+      setGuestView('home');
+    }
+  }, [isAuthenticated]);
 
   // Selected Tenant for Dedicated Detail Page
   const [detailPageTenant, setDetailPageTenant] = useState(null);
@@ -93,9 +107,18 @@ const MainAppContent = () => {
         const formattedPayments = dbPayments.map(p => ({
           ...p,
           id: p._id || p.id,
-          unit: p.roomNumber || p.unit
+          unit: p.roomNumber || p.unit,
+          period: p.month || p.period,
+          amount: p.amountPaid !== undefined ? p.amountPaid : p.amount,
+          amountPaid: p.amountPaid !== undefined ? p.amountPaid : p.amount,
+          paidDate: p.paymentDate || p.paidDate,
+          proofFile: p.proofFile || '',
+          electricityAmount: p.electricityAmount || 0,
+          electricityRef: p.electricityRef || '',
+          electricityProofFile: p.electricityProofFile || ''
         }));
         setPayments(formattedPayments);
+        localStorage.setItem('estatepulse_payments', JSON.stringify(formattedPayments));
       }
     };
 
@@ -258,7 +281,7 @@ const MainAppContent = () => {
     addToast(`Updated room unit roster for "${targetProp?.name || 'Property'}" (${updatedRooms.length} units configured).`, 'success');
   };
 
-  // Tenant Uploads Payment Proof Handler
+  // Tenant Uploads Payment Proof Handler (persisted to MongoDB Atlas)
   const handleSubmitPaymentProof = async (proofData) => {
     const mongoPayment = await apiService.createPayment({
       tenantId: proofData.tenantId,
@@ -266,7 +289,7 @@ const MainAppContent = () => {
       roomNumber: proofData.roomNumber,
       month: proofData.month,
       amountPaid: proofData.amountPaid,
-      paymentDate: proofData.paymentDate,
+      paymentDate: proofData.paymentDate || new Date().toISOString().split('T')[0],
       status: 'verification_pending',
       paymentMethod: proofData.paymentMethod,
       reference: proofData.reference,
@@ -276,69 +299,158 @@ const MainAppContent = () => {
       electricityProofFile: proofData.electricityProofFile
     });
 
-    const newProofObj = mongoPayment ? { ...mongoPayment, id: mongoPayment._id } : {
+    const newProofObj = mongoPayment ? { 
+      ...mongoPayment, 
+      id: mongoPayment._id || mongoPayment.id,
+      unit: mongoPayment.roomNumber || proofData.roomNumber,
+      period: mongoPayment.month || proofData.month,
+      amount: mongoPayment.amountPaid !== undefined ? mongoPayment.amountPaid : proofData.amountPaid,
+      amountPaid: mongoPayment.amountPaid !== undefined ? mongoPayment.amountPaid : proofData.amountPaid,
+      paidDate: mongoPayment.paymentDate || proofData.paymentDate,
+      proofFile: mongoPayment.proofFile || proofData.proofFile,
+      electricityAmount: mongoPayment.electricityAmount !== undefined ? mongoPayment.electricityAmount : proofData.electricityAmount,
+      electricityRef: mongoPayment.electricityRef || proofData.electricityRef,
+      electricityProofFile: mongoPayment.electricityProofFile || proofData.electricityProofFile,
+      status: 'verification_pending'
+    } : {
       id: `pay-${Date.now()}`,
       ...proofData,
       amount: proofData.amountPaid,
-      period: proofData.month
+      period: proofData.month,
+      status: 'verification_pending'
     };
 
-    setPayments(prev => [newProofObj, ...prev]);
+    setPayments(prev => {
+      const existingIdx = prev.findIndex(p => 
+        (p.tenantId === proofData.tenantId || (proofData.tenantId && p.tenantId?._id === proofData.tenantId)) &&
+        (p.month === proofData.month || p.period === proofData.month)
+      );
+      let updated;
+      if (existingIdx >= 0) {
+        updated = [...prev];
+        updated[existingIdx] = { ...updated[existingIdx], ...newProofObj };
+      } else {
+        updated = [newProofObj, ...prev];
+      }
+      localStorage.setItem('estatepulse_payments', JSON.stringify(updated));
+      return updated;
+    });
+
     addToast(`Payment proof submitted! Awaiting owner verification.`, 'warning');
   };
 
-  // Owner Verifies and Approves Payment Handler
-  const handleVerifyPayment = (tenant, payment) => {
+  // Owner Verifies and Approves Payment Handler (persisted to MongoDB Atlas)
+  const handleVerifyPayment = async (tenant, payment) => {
     const targetTenantId = tenant._id || tenant.id;
+    const paymentId = payment?._id || payment?.id;
 
-    // Update payment status to paid
-    setPayments(prev => prev.map(p => {
-      if ((p.id === payment?.id || p._id === payment?._id) || (p.tenantId === targetTenantId && p.month === payment?.month)) {
-        return { ...p, status: 'paid' };
-      }
-      return p;
-    }));
+    if (paymentId && !String(paymentId).startsWith('pay-')) {
+      await apiService.updatePayment(paymentId, {
+        status: 'paid',
+        paymentDate: new Date()
+      });
+    }
+
+    // Update payment status to paid in local state
+    setPayments(prev => {
+      const updated = prev.map(p => {
+        if ((p.id === paymentId || p._id === paymentId) || (p.tenantId === targetTenantId && (p.month === payment?.month || p.period === payment?.month))) {
+          return { ...p, status: 'paid', paymentDate: p.paymentDate || new Date().toISOString().split('T')[0] };
+        }
+        return p;
+      });
+      localStorage.setItem('estatepulse_payments', JSON.stringify(updated));
+      return updated;
+    });
 
     // Update tenant status to Paid
-    setTenants(prev => prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Paid' } : t));
+    setTenants(prev => {
+      const updated = prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Paid' } : t);
+      localStorage.setItem('estatepulse_tenants', JSON.stringify(updated));
+      return updated;
+    });
+
     addToast(`Approved & Verified rent payment for ${tenant.name}!`, 'success');
   };
 
-  // One-Click Owner Rent Toggle Handler
+  // One-Click Owner Rent Toggle Handler (persisted to MongoDB Atlas)
   const handleToggleRentStatus = async (tenant, month, currentPaidStatus) => {
     const targetTenantId = tenant._id || tenant.id;
+    const existingPayment = payments.find(p => 
+      (p.tenantId === targetTenantId || p.tenantId?._id === targetTenantId) && 
+      (p.month === month || p.period === month)
+    );
 
     if (!currentPaidStatus) {
-      const mongoPayment = await apiService.createPayment({
-        tenantId: targetTenantId,
-        tenantName: tenant.name,
-        roomNumber: tenant.roomNo || tenant.roomNumber || tenant.unit,
-        month: month,
-        amountPaid: tenant.rentAmount || 12000,
-        paymentDate: new Date().toISOString(),
-        status: 'paid',
-        paymentMethod: 'UPI (GPay)',
-        reference: `UPI-${Math.floor(100000 + Math.random() * 900000)}`
+      if (existingPayment && existingPayment._id && !String(existingPayment._id).startsWith('pay-')) {
+        await apiService.updatePayment(existingPayment._id, {
+          status: 'paid',
+          paymentDate: new Date()
+        });
+      } else {
+        await apiService.createPayment({
+          tenantId: targetTenantId,
+          tenantName: tenant.name,
+          roomNumber: tenant.roomNo || tenant.roomNumber || tenant.unit,
+          month: month,
+          amountPaid: tenant.rentAmount || 12000,
+          paymentDate: new Date().toISOString(),
+          status: 'paid',
+          paymentMethod: 'UPI (GPay)',
+          reference: `UPI-${Math.floor(100000 + Math.random() * 900000)}`
+        });
+      }
+
+      setPayments(prev => {
+        const found = prev.some(p => (p.tenantId === targetTenantId || p.tenantId?._id === targetTenantId) && (p.month === month || p.period === month));
+        let updated;
+        if (found) {
+          updated = prev.map(p => (p.tenantId === targetTenantId || p.tenantId?._id === targetTenantId) && (p.month === month || p.period === month) ? { ...p, status: 'paid' } : p);
+        } else {
+          updated = [{
+            id: `pay-${Date.now()}`,
+            tenantId: targetTenantId,
+            tenantName: tenant.name,
+            unit: tenant.roomNo || tenant.unit,
+            amount: tenant.rentAmount,
+            amountPaid: tenant.rentAmount,
+            period: month,
+            month: month,
+            status: 'paid',
+            paymentMethod: 'UPI',
+            reference: `UPI-${Math.floor(100000 + Math.random() * 900000)}`
+          }, ...prev];
+        }
+        localStorage.setItem('estatepulse_payments', JSON.stringify(updated));
+        return updated;
       });
 
-      const newPayObj = mongoPayment ? { ...mongoPayment, id: mongoPayment._id } : {
-        id: `pay-${Date.now()}`,
-        tenantId: targetTenantId,
-        tenantName: tenant.name,
-        unit: tenant.roomNo || tenant.unit,
-        amount: tenant.rentAmount,
-        period: month,
-        month: month,
-        status: 'paid',
-        paymentMethod: 'UPI',
-        reference: `UPI-${Math.floor(100000 + Math.random() * 900000)}`
-      };
+      setTenants(prev => {
+        const updated = prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Paid' } : t);
+        localStorage.setItem('estatepulse_tenants', JSON.stringify(updated));
+        return updated;
+      });
 
-      setPayments(prev => [newPayObj, ...prev]);
-      setTenants(prev => prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Paid' } : t));
       addToast(`Marked ${tenant.name} (${tenant.roomNo || tenant.unit}) rent as PAID for ${month}!`, 'success');
     } else {
-      setTenants(prev => prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Pending' } : t));
+      if (existingPayment && existingPayment._id && !String(existingPayment._id).startsWith('pay-')) {
+        await apiService.updatePayment(existingPayment._id, {
+          status: 'pending'
+        });
+      }
+
+      setPayments(prev => {
+        const updated = prev.map(p => (p.tenantId === targetTenantId || p.tenantId?._id === targetTenantId) && (p.month === month || p.period === month) ? { ...p, status: 'pending' } : p);
+        localStorage.setItem('estatepulse_payments', JSON.stringify(updated));
+        return updated;
+      });
+
+      setTenants(prev => {
+        const updated = prev.map(t => (t.id === targetTenantId || t._id === targetTenantId) ? { ...t, paymentStatus: 'Pending' } : t);
+        localStorage.setItem('estatepulse_tenants', JSON.stringify(updated));
+        return updated;
+      });
+
       addToast(`Marked ${tenant.name} rent as PENDING for ${month}`, 'warning');
     }
   };
@@ -480,8 +592,93 @@ const MainAppContent = () => {
     }
   };
 
+  const handleQuickDemoAdmin = () => {
+    loginAdmin('admin@estatepulse.com', 'admin123');
+    addToast('Logged in as Yashodhan Gurav (Owner Demo)', 'success');
+  };
+
+  const handleQuickDemoTenant = () => {
+    const defaultTenant = tenants[0] || INITIAL_TENANTS[0];
+    loginTenant(defaultTenant?.email || 'rahul.sharma@example.com', defaultTenant?.password || 'Rahul101Password', tenants);
+    addToast(`Logged in as Resident: ${defaultTenant?.name || 'Rahul Sharma'}`, 'success');
+  };
+
+  // 1. If user is currently previewing public website from dashboard
+  if (viewPublicHome) {
+    return (
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 110,
+          background: 'var(--accent-primary)',
+          color: '#ffffff',
+          padding: '0.65rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontSize: '0.825rem',
+          fontWeight: 600,
+          boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <span>🌐 Previewing Public Website & Home Page</span>
+            <span style={{ opacity: 0.85, fontSize: '0.75rem', fontWeight: 400 }}>
+              (Non-authenticated visitors see this)
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setViewPublicHome(false)}
+            className="btn btn-secondary btn-sm"
+            style={{ background: '#ffffff', color: '#0F172A', border: 'none', padding: '0.35rem 0.85rem', fontSize: '0.75rem', fontWeight: 600 }}
+          >
+            ← Return to {isTenant ? 'Resident Portal' : 'Admin Dashboard'}
+          </button>
+        </div>
+        <HomePage
+          onOpenLogin={() => setViewPublicHome(false)}
+          onQuickDemoAdmin={() => setViewPublicHome(false)}
+          onQuickDemoTenant={() => setViewPublicHome(false)}
+          properties={properties}
+          tenants={tenants}
+          payments={payments}
+          maintenance={maintenance}
+          theme={theme}
+          setTheme={setTheme}
+        />
+      </div>
+    );
+  }
+
+  // 2. If visitor is NOT authenticated
   if (!isAuthenticated) {
-    return <Login tenants={tenants} />;
+    if (guestView === 'login') {
+      return (
+        <Login 
+          tenants={tenants} 
+          initialRole={loginRole} 
+          onBackToHome={() => setGuestView('home')} 
+        />
+      );
+    }
+
+    return (
+      <HomePage
+        onOpenLogin={(role) => {
+          setLoginRole(role || 'admin');
+          setGuestView('login');
+        }}
+        onQuickDemoAdmin={handleQuickDemoAdmin}
+        onQuickDemoTenant={handleQuickDemoTenant}
+        properties={properties}
+        tenants={tenants}
+        payments={payments}
+        maintenance={maintenance}
+        theme={theme}
+        setTheme={setTheme}
+      />
+    );
   }
 
   // IF LOGGED IN AS TENANT
@@ -492,6 +689,7 @@ const MainAppContent = () => {
           tenants={tenants}
           payments={payments}
           onSubmitPaymentProof={handleSubmitPaymentProof}
+          onViewPublicHome={() => setViewPublicHome(true)}
           onViewReceipt={(payment) => {
             setReceiptPayment(payment);
             setIsReceiptModalOpen(true);
@@ -562,6 +760,7 @@ const MainAppContent = () => {
         openMaintenanceCount={maintenance.filter(m => m.status !== 'Resolved').length}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        onViewPublicHome={() => setViewPublicHome(true)}
       />
 
       {/* Main View Area */}
@@ -574,6 +773,7 @@ const MainAppContent = () => {
           setTheme={setTheme}
           urgentAlerts={urgentAlerts}
           onToggleMobileMenu={() => setMobileMenuOpen(prev => !prev)}
+          onViewPublicHome={() => setViewPublicHome(true)}
           onOpenAddTenant={() => {
             setTenantToEdit(null);
             setIsTenantModalOpen(true);
